@@ -22,6 +22,7 @@ Manindeer *, Giudice * et al. Esearch3D: Leveraging gene expression and chromati
 *Esearch3D* is available on R, you can install it by:
 
 ```r
+install.packages("devtools")
 install.packages("htmltools", version="0.5.2", type="source")
 devtools::install_github(
   repo="LucaGiudice/Esearch3D",
@@ -37,8 +38,11 @@ devtools::install_github(
 
 There are the following vignettes:
 
-1. [A Quick Start of Using D3SearchE Package and introduction to the results](https://github.com/LucaGiudice/D3SearchE/blob/main/vignettes/Vignette.Rmd)
-2. [Real case vignette with data used in the publication](https://github.com/LucaGiudice/D3SearchE/blob/main/vignettes/TSS_vignette.Rmd)
+1. [Quick Start with Dummy data](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/Vignette.Rmd)
+2. [Vignette with TSS data without enhancer annotation](https://github.com/LucaGiudice/D3SearchE/blob/main/vignettes/TSS_vignette.Rmd)
+3. [Vignette with WG data without enhancer annotation](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/WG_vignette.Rmd)
+4. [Vignette with WG data with enhancer annotation and Machine Learning](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/WG_ML_vignette.Rmd)
+
 
 ## Representation of chromatin data
 <p align="center">
