@@ -29,7 +29,7 @@ devtools::install_github(
   ref = "main",
   dependencies = "Depends",
   upgrade = "always",
-  quiet = F
+  quiet = T
   # type = "binary" # usable only in Windows OS
 )
 ```
