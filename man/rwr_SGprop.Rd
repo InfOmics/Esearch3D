@@ -2,12 +2,13 @@
 % Please edit documentation in R/funs_RWR.R
 \name{rwr_SGprop}
 \alias{rwr_SGprop}
-\title{Performs the single gene network based propagation}
+\title{Single gene network based propagation based on random walk with restart}
 \usage{
 rwr_SGprop(
   gf_net,
   ff_net,
   gene_in,
+  input_m,
   frag_pattern = "frag",
   out_rda = "sg_prop.rda",
   degree = 4,
@@ -17,11 +18,13 @@ rwr_SGprop(
 )
 }
 \arguments{
-\item{gf_net}{Edge list representing a network such that first column are genes and second column are "FragX" fragments}
+\item{gf_net}{Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments}
 
-\item{ff_net}{Edge list representing a network such that first and second column are "FragX" fragments}
+\item{ff_net}{Edge list of the chromatin interaction network such that first and second column are "FragX" fragments}
 
 \item{gene_in}{Character vector of the genes of interest}
+
+\item{input_m}{numeric matrix of cell profile, one column of a cell, rows are genes or fragments, values are expression or IAS}
 
 \item{frag_pattern}{Character string to identify the fragments in the edge list (e.g. "FragX")}
 
@@ -41,12 +44,15 @@ contr_lxDest: For each target node as element of the list, the vector of the see
 contr_lxOrig: For each seed node as element of the list, the vector of the targets nodes which receive information from it
 }
 \description{
-Performs the single gene network based propagation based on Random walk with restart and
-determines their contribution in the standard overall propagation
-This function performs the propagation of individual genes of the starting sample's profile.
-It does not perform the standard propagation using all the sample's genes.
-The result is a propagated profile associate to each desired gene which was present in the initial sample's profile
-and at the same time present in the input network.
-Then it determines how much a gene contributed to give information to the fragments.
-Then it determines how much a fragment received information from the genes
+Performs the single gene propagation based on Random walk with restart.
+This operation is suggested to apply only after having performed the standard propagation based on all the genes with the two steps.
+First, overall propagation to diffuse expression of all genes included in a cell profile to genic fragments.
+Second, overall propagation to diffuse the propagated expression of all genes from genic fragments to intergenic.
+}
+\details{
+This function performs the propagation of individual genes of interest belonging to a cell's expression profile.
+It does not perform the standard propagation using all the genes of a cell profile.
+It then returns how much each gene of interest contributed to give information to the fragments.
+It then returns how much each fragment received information from the genes of interest.
+This function helps to understand the contribution of the individual genes in the two-step standard propagation.
 }

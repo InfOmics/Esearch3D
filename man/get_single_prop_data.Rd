@@ -19,7 +19,7 @@ get_single_prop_data(
 
 \item{ff_net}{Edge list representing a network such that first and second column are "FragX" fragments}
 
-\item{input_m}{Numeric matrix of sample profiles}
+\item{input_m}{Numeric matrix of cell profiles}
 
 \item{dist_m}{Distance matrix computed between the genes and the non-genic fragments in the network}
 

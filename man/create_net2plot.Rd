@@ -2,7 +2,7 @@
 % Please edit documentation in R/funs_GUI.R
 \name{create_net2plot}
 \alias{create_net2plot}
-\title{Create an igraph network object for visualization purposes}
+\title{Create an igraph object of the chromatin interaction network (CIN) for visualization purposes}
 \usage{
 create_net2plot(
   g_net,
@@ -15,24 +15,24 @@ create_net2plot(
 )
 }
 \arguments{
-\item{g_net}{edge list matrix of the gene gene interaction network}
+\item{g_net}{Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments}
 
-\item{input_m}{sample's profile of interest before the propagation}
+\item{input_m}{numeric matrix of a cell expression profile before the propagation}
 
-\item{gf_prop}{sample's profile of interest after the first step of propagation with the gene-gene interaction network}
+\item{gf_prop}{numeric matrix of a cell profile after the first step of the propagation applied with only the gene-genic fragment component of the CIN}
 
 \item{ann_net_b}{matrix, for each row presents the gene identifier, the chromosome in which the gene is, the starting end ending position in the sequence.}
 
-\item{frag_pattern}{string, initial character of the fragments name (e.g. "F")}
+\item{frag_pattern}{string, initial character of the fragments name (e.g. "F" or "Frag")}
 
-\item{ff_net}{edge list matrix of the gene fragment interaction network}
+\item{ff_net}{Edge list of the chromatin interaction network such that first and second column are "FragX" fragments}
 
-\item{ff_prop}{sample's profile of interest after the second step of propagation with the gene-fragment interaction network}
+\item{ff_prop}{numeric matrix of a cell profile after the second step of the propagation applied with the fragment-fragment component of the CIN}
 }
 \value{
 igraph object
 }
 \description{
-Given the input and output of a two step network based propagation, it assembles an igraph object with all
+Given the input and output of the two step network based propagation, it assembles an igraph object of the CIN with all
 the information included in order to be visualized or analysed
 }

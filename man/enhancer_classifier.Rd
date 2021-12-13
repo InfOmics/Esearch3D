@@ -42,7 +42,7 @@ best_lrn is the mlr3 object containing the classifier which best classifiers enh
 }
 \description{
 This function creates a classifier able to predict if a node is an enhancer or not based
-on centrality measures and propagation values obtained with the two step propagation.
+on centrality measures and propagation values obtained with the multi-gene two-step propagation.
 First, it creates the task, tunes a ranger random forest, trains the model and predict
 a randomly selected testing set in cross validation.
 }

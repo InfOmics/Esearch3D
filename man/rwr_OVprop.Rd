@@ -2,7 +2,7 @@
 % Please edit documentation in R/funs_RWR.R
 \name{rwr_OVprop}
 \alias{rwr_OVprop}
-\title{Network based propagation based on Random walk with restart}
+\title{Network based propagation with random walk for the multi-gene two-step propagation}
 \usage{
 rwr_OVprop(
   g,
@@ -16,13 +16,13 @@ rwr_OVprop(
 )
 }
 \arguments{
-\item{g}{Feature interaction network as adjacency matrix}
+\item{g}{igraph, edge list or adjacency matrix of the chromatin interaction network (CIN)}
 
-\item{input_m}{Numeric matrix of sample profiles}
+\item{input_m}{numeric matrix of cell profiles, columns are cells, rows are genes or fragments, value is expression of IAS}
 
-\item{norm}{Default column, options: row or column or laplacian, it indicates the graph normalization performed on the network}
+\item{norm}{Default column, options: row or column or laplacian, it sets the graph normalization performed on the network}
 
-\item{no_cores}{Default 2, An integer value greater than 0 indicating the number of cores to use for parallel computing}
+\item{no_cores}{Default 2, An integer value greater than 0 indicating the number of cores to use for computing in parallel the task}
 
 \item{r}{Default 0.8, A double value lower than 1 indicating the percentage of information that a gene keeps (0.8 is 80 percentage)}
 
@@ -33,10 +33,14 @@ rwr_OVprop(
 \item{keep_zero}{Default FALSE, Boolean: TRUE if to keep profiles without information}
 }
 \value{
-Propaged sample's profiles
+matrix of propagated profiles with imputed activity scores for the genes and fragments in the network and that replace the original expression profiles
 }
 \description{
-This function performs propagation of the sample's profiles passed as columns of a matrix.
-The sample's profile is characterized by the expression or aboundance of gene or fragments also called generically features
-of the sample into account.
+This function performs propagation of each individual cell expression profile associated to a column of an expression matrix.
+The cell expression profile is characterized by the expression of genes at the rows.
+The values of the genes indicate their expression in a specific column and cell profile
+The propagation considers each cell profile at a time. It maps the expression values to the corresponding genes represented as nodes in the network.
+It diffuses the gene expression values. Each node in the CIN network composed by genes, genic fragments and intergenic fragments gets a propagation score which
+measures its activity. The imputed activity score (IAS) obtained by genes and fragments replaces their original value in the cell expression profile.
+The result is a new matrix of cell profiles. Each cell profile is now described with genes and also fragments who own a IAS.
 }

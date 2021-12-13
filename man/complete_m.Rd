@@ -2,18 +2,23 @@
 % Please edit documentation in R/funs_RWR.R
 \name{complete_m}
 \alias{complete_m}
-\title{Harmonizes the matrix of sample's profiles with respect the network}
+\title{Harmonizes the matrix of cell expression profiles with respect the CIN network}
 \usage{
 complete_m(m_profiles, net)
 }
 \arguments{
-\item{m_profiles}{Profile matrix with rows matching nodes of the network}
+\item{m_profiles}{numeric matrix of profiles, rows are genes, column is a cell or sample, value is numeric indicating a gene expression in a cell column and profile}
 
-\item{net}{Adjacency matrix of a network s.t. nodes have same names of the rows in the profile matrix}
+\item{net}{adjacency matrix of the CIN network (it has to contain nodes with the same names of genes characterizing the input cell profiles)}
 }
 \value{
-The profile matrix without the rows not having a match with a node of the network
+matrix of profiles without the rows that are not represented by a node in the network
 }
 \description{
-Remove all the genes and fragments that don't match between the sample's profiles and the nodes inside the network
+Remove all the genes that don't match between the cell expression profiles and the nodes inside the network
+}
+\details{
+Given an expression matrix of one or multiple profiles at the columns and genes located at the rows:
+The method keeps only the genes that exist also in the network (CIN)
+This because only existing genes in the cell profile can give information to the corresponding nodes in the network and allow the propagation
 }

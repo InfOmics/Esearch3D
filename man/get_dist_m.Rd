@@ -17,5 +17,5 @@ get_dist_m(gf_net, ff_net, frag_pattern = "Frag")
 Distance matrix of genes and non-genic fragments
 }
 \description{
-Given the gene-fragment network and the fragment-fragment network, it computes the distances from the genes to the non genic fragments
+Given the gene-genic fragment network and the fragment-fragment network, it computes the distances from the genes to the non genic fragments
 }

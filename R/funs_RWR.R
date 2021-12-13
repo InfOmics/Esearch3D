@@ -1,10 +1,14 @@
-#' Harmonizes the matrix of sample's profiles with respect the network
+#' Harmonizes the matrix of cell expression profiles with respect the CIN network
 #'
-#' Remove all the genes and fragments that don't match between the sample's profiles and the nodes inside the network
+#' Remove all the genes that don't match between the cell expression profiles and the nodes inside the network
 #'
-#' @param m_profiles Profile matrix with rows matching nodes of the network
-#' @param net Adjacency matrix of a network s.t. nodes have same names of the rows in the profile matrix
-#' @return The profile matrix without the rows not having a match with a node of the network
+#' Given an expression matrix of one or multiple profiles at the columns and genes located at the rows:
+#' The method keeps only the genes that exist also in the network (CIN)
+#' This because only existing genes in the cell profile can give information to the corresponding nodes in the network and allow the propagation
+#'
+#' @param m_profiles numeric matrix of profiles, rows are genes, column is a cell or sample, value is numeric indicating a gene expression in a cell column and profile
+#' @param net adjacency matrix of the CIN network (it has to contain nodes with the same names of genes characterizing the input cell profiles)
+#' @return matrix of profiles without the rows that are not represented by a node in the network
 #' @export
 #'
 complete_m = function(m_profiles,net){
@@ -34,21 +38,26 @@ complete_m = function(m_profiles,net){
   return(m_profiles)
 }
 
-#' Network based propagation based on Random walk with restart
+#' Network based propagation with random walk for the multi-gene two-step propagation
 #'
-#' This function performs propagation of the sample's profiles passed as columns of a matrix.
-#' The sample's profile is characterized by the expression or aboundance of gene or fragments also called generically features
-#' of the sample into account.
+#' This function performs propagation of each individual cell expression profile associated to a column of an expression matrix.
+#' The cell expression profile is characterized by the expression of genes at the rows.
+#' The values of the genes indicate their expression in a specific column and cell profile
+#' The propagation considers each cell profile at a time. It maps the expression values to the corresponding genes represented as nodes in the network.
+#' It diffuses the gene expression values. Each node in the CIN network composed by genes, genic fragments and intergenic fragments gets a propagation score which
+#' measures its activity. The imputed activity score (IAS) obtained by genes and fragments replaces their original value in the cell expression profile.
+#' The result is a new matrix of cell profiles. Each cell profile is now described with genes and also fragments who own a IAS.
 #'
-#' @param g Feature interaction network as adjacency matrix
-#' @param input_m Numeric matrix of sample profiles
-#' @param norm Default column, options: row or column or laplacian, it indicates the graph normalization performed on the network
-#' @param no_cores Default 2, An integer value greater than 0 indicating the number of cores to use for parallel computing
+#'
+#' @param g igraph, edge list or adjacency matrix of the chromatin interaction network (CIN)
+#' @param input_m numeric matrix of cell profiles, columns are cells, rows are genes or fragments, value is expression of IAS
+#' @param norm Default column, options: row or column or laplacian, it sets the graph normalization performed on the network
+#' @param no_cores Default 2, An integer value greater than 0 indicating the number of cores to use for computing in parallel the task
 #' @param r Default 0.8, A double value lower than 1 indicating the percentage of information that a gene keeps (0.8 is 80 percentage)
 #' @param stop_step Default 200, An integer value greater than 0 indicating the number of iterations of the propagation
 #' @param stop_delta Default 1e-06, A double value lower than 0 indicating the threshold under which all imputed propagation values are set 0
 #' @param keep_zero Default FALSE, Boolean: TRUE if to keep profiles without information
-#' @return Propaged sample's profiles
+#' @return matrix of propagated profiles with imputed activity scores for the genes and fragments in the network and that replace the original expression profiles
 #' @import data.table
 #' @import Matrix
 #' @import scales
@@ -186,8 +195,8 @@ diag_prof = function(input_m){
 #' It takes the result of a run of network-based propagation and determines which and how much information
 #' the target nodes received from a specific seed node
 #'
-#' @param ff_prop Matrix of propagated profiles: seed nodes at the columns and target nodes at the rows
-#' @param no_cores Default 1, An integer value greater than 0 indicating the number of cores to use for parallel computing
+#' @param ff_prop numeric matrix of propagated profiles: seed nodes at the columns and target nodes at the rows
+#' @param no_cores Default 1, An integer value greater than 0 indicating the number of cores to use for computing in parallel this task
 #' @return A list with contr_prop_l: For each seed node as element of the list, the vector of the targets nodes which receive information from it
 #' Plus, also the original propagation profiles of the seed nodes.
 #' @import data.table
@@ -246,8 +255,8 @@ get_contrib_propXorig = function(ff_prop,no_cores=1){
 #' It takes the result of a run of network-based propagation and determines which and how much information
 #' the seed nodes gave to a specific target node
 #'
-#' @param ff_prop Matrix of propagated profiles: seed nodes at the columns and target nodes at the rows
-#' @param no_cores Default 1, An integer value greater than 0 indicating the number of cores to use for parallel computing
+#' @param ff_prop numeric matrix of propagated profiles: seed nodes at the columns and target nodes at the rows
+#' @param no_cores Default 1, An integer value greater than 0 indicating the number of cores to use for computing in parallel this task
 #' @return A list with contr_prop_l: For each target node as element of the list, the vector of the seed nodes which gave information to it
 #' Plus, also the original propagation profiles of the target nodes.
 #' @import data.table
@@ -301,7 +310,7 @@ get_contrib_propXdest = function(ff_prop,no_cores=1){
 
 #' Determines the shortest distances from all the genes to the non genic fragments
 #'
-#' Given the gene-fragment network and the fragment-fragment network, it computes the distances from the genes to the non genic fragments
+#' Given the gene-genic fragment network and the fragment-fragment network, it computes the distances from the genes to the non genic fragments
 #'
 #' @param gf_net Edge list representing a network such that first column are genes and second column are "FragX" fragments
 #' @param ff_net Edge list representing a network such that first and second column are "FragX" fragments
@@ -310,7 +319,6 @@ get_contrib_propXdest = function(ff_prop,no_cores=1){
 #' @import cppRouting
 #' @import Rfast
 #' @import igraph
-#' @export
 #'
 get_dist_m = function(gf_net,ff_net,frag_pattern="Frag"){
   #Pattern to recognise genes in the network
@@ -337,7 +345,7 @@ get_dist_m = function(gf_net,ff_net,frag_pattern="Frag"){
 #'
 #' @param gf_net Edge list representing a network such that first column are genes and second column are "FragX" fragments
 #' @param ff_net Edge list representing a network such that first and second column are "FragX" fragments
-#' @param input_m Numeric matrix of sample profiles
+#' @param input_m Numeric matrix of cell profiles
 #' @param dist_m Distance matrix computed between the genes and the non-genic fragments in the network
 #' @param gene_in Character vector of the genes of interest
 #' @param frag_pattern Character string to identify the fragments in the edge list (e.g. "FragX")
@@ -415,20 +423,23 @@ get_single_prop_data = function(gf_net,ff_net,input_m,dist_m,
   return(data_l)
 }
 
-#' Performs the single gene network based propagation
+#' Single gene network based propagation based on random walk with restart
 #'
-#' Performs the single gene network based propagation based on Random walk with restart and
-#' determines their contribution in the standard overall propagation
-#' This function performs the propagation of individual genes of the starting sample's profile.
-#' It does not perform the standard propagation using all the sample's genes.
-#' The result is a propagated profile associate to each desired gene which was present in the initial sample's profile
-#' and at the same time present in the input network.
-#' Then it determines how much a gene contributed to give information to the fragments.
-#' Then it determines how much a fragment received information from the genes
+#' Performs the single gene propagation based on Random walk with restart.
+#' This operation is suggested to apply only after having performed the standard propagation based on all the genes with the two steps.
+#' First, overall propagation to diffuse expression of all genes included in a cell profile to genic fragments.
+#' Second, overall propagation to diffuse the propagated expression of all genes from genic fragments to intergenic.
 #'
-#' @param gf_net Edge list representing a network such that first column are genes and second column are "FragX" fragments
-#' @param ff_net Edge list representing a network such that first and second column are "FragX" fragments
+#' This function performs the propagation of individual genes of interest belonging to a cell's expression profile.
+#' It does not perform the standard propagation using all the genes of a cell profile.
+#' It then returns how much each gene of interest contributed to give information to the fragments.
+#' It then returns how much each fragment received information from the genes of interest.
+#' This function helps to understand the contribution of the individual genes in the two-step standard propagation.
+#'
+#' @param gf_net Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments
+#' @param ff_net Edge list of the chromatin interaction network such that first and second column are "FragX" fragments
 #' @param gene_in Character vector of the genes of interest
+#' @param input_m numeric matrix of cell profile, one column of a cell, rows are genes or fragments, values are expression or IAS
 #' @param frag_pattern Character string to identify the fragments in the edge list (e.g. "FragX")
 #' @param out_rda Default: sg_prop.rda, Character string to define the output rda file which will contain all the results of the analysis and intermediate products
 #' @param degree Default 4, the degree of distance which is used to select the most important fragments connected to the genes of interest (e.g. degree 2 means G --> F1 --> F2)
@@ -450,7 +461,7 @@ get_single_prop_data = function(gf_net,ff_net,input_m,dist_m,
 #' @import cppRouting
 #' @export
 #'
-rwr_SGprop = function(gf_net,ff_net,gene_in,frag_pattern="frag",out_rda="sg_prop.rda",
+rwr_SGprop = function(gf_net,ff_net,gene_in,input_m,frag_pattern="frag",out_rda="sg_prop.rda",
                       degree=4,r1=0.1,r2=0.8,no_cores=2){
   cat("\n###################################\n")
   cat("Starting single gene propagation \n")

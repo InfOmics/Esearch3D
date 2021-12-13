@@ -2,18 +2,18 @@
 % Please edit documentation in R/funs_ML.R
 \name{tuning_prop_vars}
 \alias{tuning_prop_vars}
-\title{Get the optimal isolation parameters for the two step propagation}
+\title{Get the optimal isolation parameters for the multi-gene two-step propagation}
 \usage{
 tuning_prop_vars(gf_net, ff_net, input_m, info = NULL, n_cores = 2)
 }
 \arguments{
-\item{gf_net}{Edge list of a network composed by genes and genetic fragments}
+\item{gf_net}{Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments}
 
-\item{ff_net}{Edge list of a network composed only by fragment interactions}
+\item{ff_net}{Edge list of the chromatin interaction network such that first and second column are "FragX" fragments}
 
-\item{input_m}{Numeric matrix of sample profiles}
+\item{input_m}{numeric matrix of cell profile, one column of a cell, rows are genes or fragments, values are expression or IAS}
 
-\item{info}{2-column dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node}
+\item{info}{2-column dataframe, first column is character vector of node names, second colum is numeric vector of number of enhancer annotations associated to a node}
 
 \item{n_cores}{number of cores to run the function with parallel computing}
 }

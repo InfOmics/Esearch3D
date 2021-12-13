@@ -4,10 +4,9 @@ output:
   html_document:
     theme: united
     toc: yes
-vignette: |
-  %\VignetteIndexEntry{Vignette} 
-  %\VignetteEngine{knitr::rmarkdown} 
-  %\VignetteEncoding{UTF-8}
+  pdf_document:
+    toc: yes
+vignette: "%\\VignetteIndexEntry{Vignette} \n%\\VignetteEngine{knitr::rmarkdown} \n%\\VignetteEncoding{UTF-8}\n"
 ---
 
 ```{r, include = FALSE}
@@ -16,7 +15,17 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+# Esearch3D introduction with dummy example
+Welcome to the first vignette of our software for the prediction of the activity of integenic fragments.
+This vignette introduces to the workflow of Esearch3D.
+It goes through all the main operations of the software with dummy data.
+The only part that this vignette does not present is the classification of enhancers with machine learning.
+The latter topic is kept as last in order that only advance users can access to it.
+We hope that providing this vignette can help to understand the data, the operations and the results of our software.
 
+# Enviroment set up
+Let us clean the R enviroment, set the working directory, load the software package, set the random seed generator for reproducing always the same results and define the number of cores available in the computer to run the operations.
+Be careful: set up the number of cores based on your resources, if you are not secure how to, then just set equal to 2
 ```{r setup}
 
 #Clean workspace and memory ----
@@ -41,31 +50,60 @@ set.seed(8)
 #Set number of cores to parallelize the tasks
 n_cores=5
 ```
+# Data set up
+Esearch3D requires a chromatin interaction network (CIN) composed by genes, genic fragments and non-genic fragments.
+The network must be divded into two components: one with only gene-genic fragments interactions and one with only interactions between fragments. The two components can be provided as: igraph objects, edge lists or adjacency matrices. 
 
-```{r example data loading}
-
+```{r data set up part 1}
 #Load and set up the example data ----
 data("dummy_data_l")
 #gene - fragment interaction network
-gf_net=dummy_data_l$gf_net
+gf_net=dummy_data_l$gf_net;head(gf_net);
 #gene-fragment-fragment interaction network
-ff_net=dummy_data_l$ff_net
-#sample profile with starting values for genes and fragments
-input_m=dummy_data_l$input_m
-#length of chromosomes
-chr_len=dummy_data_l$chr_len
-#gene annotation
-ann_net_b=dummy_data_l$ann_net_b
+ff_net=dummy_data_l$ff_net;head(ff_net);
 ```
 
-```{r two step propagation with random walk with restart}
+Esearch3D requires a cell's expression profile. Specifically, a numeric matrix of the cell's profile, one column per cell, rows are genes, the value of a gene should be its expression value in a column cell.
 
+```{r data set up part 2}
+#cell profile with starting values of genes
+input_m=dummy_data_l$input_m;head(input_m)
+```
+# Extra data set up
+
+Esearch3D can take the length of the chromosomes of the organism in study and the annotation of the genes in the cell's profile. These data can be provided but are not necessar to get the Imputed Activity Scores They are only used to visualize metainformation with the propagation results inside the graphical user interface (GUI).
+
+```{r data set up part 3}
+#length of chromosomes
+chr_len=dummy_data_l$chr_len;head(chr_len);
+#gene annotation
+ann_net_b=dummy_data_l$ann_net_b;head(ann_net_b);
+```
+
+# Multi-gene two-step propagation
+The expression of the genes is propagated from their corresponding nodes into only the genic fragments. This facilitates the unbiased assignment of gene expression to nodes containing multiple promoters (i.e., genes that map to multiple nodes).
+Be carefull: r is the isolation parameter, use low value for first step, use high value for second step
+
+```{r two step propagation with random walk with restart part 1}
 #Two step propagation -----
 #Propagation over the gene-fragment network
-gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, r=0.1)
-#Propagation over the gene-fragment-fragment network
-ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
+gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, r=0.1);head(gf_prop)
+```
 
+The gene expression is then propagated to the rest of the CIN. 
+The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
+
+```{r two step propagation with random walk with restart part 2}
+#Propagation over the gene-fragment-fragment network
+ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8);head(ff_prop)
+```
+
+# Graphical user interface
+The software provides a GUI to visualize the IAS of a node with respect its neighbourhood in the CIN
+First, it creates an igrah object with IAS and metainformatio
+Second, it starts the GUI
+
+```{r GUI, results = "hide"}
 #Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
 
@@ -73,29 +111,47 @@ net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_
 start_GUI(net, ann_net_b, chr_len, example=T)
 ```
 
-```{r single gene propagation to infer information about seed and target nodes }
+# Single gene network-based propagation
+The software performs the propagation of individual genes of interest belonging to a cell's expression profile.
+It then returns how much each gene of interest contributed to give information to the fragments.
+It then returns how much each fragment received information from the genes of interest.
+This function helps to understand the contribution of the individual genes in the two-step standard propagation
+It requries the name of the genes of interest.
+It requires the string pattern composing the names of the fragments. For example, F due to F1, F2, F3 and so on.
+It requires the distance between the genes of interest and the fragments to investigate. We recommend a distance equal to 3 or 4 based on the computational resources available, 3 requires less time, while 4 provides more accurate results. 
+In other words, it limits the CIN to the subnetwork composed by the gene of interest and the fragments that are distant to it with at maximum 4 interactions: gene - f1 - f2 - f3 - f4. In this way, it does not consider too much far relationships.
+
+
+```{r single gene propagation }
 
 #Single gene propagation -----
-degree = 3
-frag_pattern = "F"
 gene_in=c("G1")
-
-contrXgene_l=rwr_SGprop(gf_net, ff_net, gene_in, frag_pattern,
+frag_pattern = "F"
+degree = 3
+contrXgene_l=rwr_SGprop(gf_net, ff_net, gene_in, input_m, frag_pattern,
                         degree = degree, r1 = 0.1, r2 = 0.8, no_cores = n_cores)
+```
 
+# Gene contribution
+From the results of the single gene propagation, it is possible to extract the contribution of a specific gene of interest in the intergenic fragments and watch it in the GUI
+
+```{r single gene propagation results }
 #Create igraph object with all the information included
 sff_prop=as.matrix(contrXgene_l$G1$contr_lxDest$ff_prop[,gene_in])
 colnames(sff_prop)=gene_in
+
+```
+
+# Gene contribution visualization
+Instead of the overall propagation profile, it is possible to generate the igraph combining the chromatin interaction network and the propagation profile of a single gene of interest. In this way, it is possible to visualzione the profile and the contribution of the gene in the overall network.
+
+```{r single gene propagation gui, results = "hide"}
 #Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
 
 #Start GUI
 start_GUI(net, ann_net_b, chr_len, example=T)
 ```
-
-
-
-
 
 
 

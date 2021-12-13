@@ -7,16 +7,16 @@
 get_centr_info(gf_net, ff_net, info)
 }
 \arguments{
-\item{gf_net}{Edge list of a network composed by genes and genetic fragments}
+\item{gf_net}{Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments}
 
-\item{ff_net}{Edge list of a network composed only by fragment interactions}
+\item{ff_net}{Edge list of the chromatin interaction network such that first and second column are "FragX" fragments}
 
-\item{info}{2-column dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node}
+\item{info}{2-column dataframe, first column is character vector of node names (genes and fragments), second colum is numeric vector of number of enhancer annotations associated to a node}
 }
 \value{
 The info matrix with centrality measures associated to the nodes as new meta information
 }
 \description{
-This function determines the centrality measures of the genes or fragments included in the
-networks and that have a prior information about being or not being enhancer
+This function determines the centrality measures of the genes and fragments included in the
+CIN and that have a prior information about being or not being enhancer
 }

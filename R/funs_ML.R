@@ -23,12 +23,12 @@ rank_scale=function(v){
 
 #' Get centrality measures about nodes
 #'
-#' This function determines the centrality measures of the genes or fragments included in the
-#' networks and that have a prior information about being or not being enhancer
+#' This function determines the centrality measures of the genes and fragments included in the
+#' CIN and that have a prior information about being or not being enhancer
 #'
-#' @param gf_net Edge list of a network composed by genes and genetic fragments
-#' @param ff_net Edge list of a network composed only by fragment interactions
-#' @param info 2-column dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node
+#' @param gf_net Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments
+#' @param ff_net Edge list of the chromatin interaction network such that first and second column are "FragX" fragments
+#' @param info 2-column dataframe, first column is character vector of node names (genes and fragments), second colum is numeric vector of number of enhancer annotations associated to a node
 #' @return The info matrix with centrality measures associated to the nodes as new meta information
 #' @import igraph
 #' @import data.table
@@ -43,7 +43,7 @@ get_centr_info=function(gf_net,ff_net,info){
   info=as.data.frame(info)
 
   #Create the joint network
-  data_net=rbind(gf_net, ff_net)
+  data_net=ff_net
 
   #Format and filter from duplicated rows the network edgelist
   colnames(data_net)<-c("V1","V2")
@@ -78,16 +78,16 @@ get_centr_info=function(gf_net,ff_net,info){
   return(info)
 }
 
-#' Get the optimal isolation parameters for the two step propagation
+#' Get the optimal isolation parameters for the multi-gene two-step propagation
 #'
 #' This function determines the optimal values for the isolation parameter in the two
 #' step propagation, one value for the propagation with the gene-fragment network and one
 #' with the fragment-fragment network
 #'
-#' @param gf_net Edge list of a network composed by genes and genetic fragments
-#' @param ff_net Edge list of a network composed only by fragment interactions
-#' @param input_m Numeric matrix of sample profiles
-#' @param info 2-column dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node
+#' @param gf_net Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments
+#' @param ff_net Edge list of the chromatin interaction network such that first and second column are "FragX" fragments
+#' @param input_m numeric matrix of cell profile, one column of a cell, rows are genes or fragments, values are expression or IAS
+#' @param info 2-column dataframe, first column is character vector of node names, second colum is numeric vector of number of enhancer annotations associated to a node
 #' @param n_cores number of cores to run the function with parallel computing
 #' @return List of two elements: combinations and best_comb
 #' combinations contains all the pair of values tested
@@ -151,7 +151,7 @@ tuning_prop_vars = function(gf_net,ff_net,input_m,info=NULL,n_cores=2){
 #' This function merges propagation results with meta information providing the number of enhancer
 #' annotions associated to the fragments in the network
 #'
-#' @param ff_prop Propagation result obtained with the second step of the overall propagation
+#' @param ff_prop Propagation result obtained with the second step of the multi-gene two-step propagation
 #' @param info dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node,
 #' third column is the binarized version of the second column (1 the node has enhancer annotations, 0 otherwise), the
 #' left columns are the centrality measures
@@ -173,7 +173,7 @@ merge_prop_info = function(ff_prop,info){
 #' Enhancer classifier based on centrality measures and propagation
 #'
 #' This function creates a classifier able to predict if a node is an enhancer or not based
-#' on centrality measures and propagation values obtained with the two step propagation.
+#' on centrality measures and propagation values obtained with the multi-gene two-step propagation.
 #' First, it creates the task, tunes a ranger random forest, trains the model and predict
 #' a randomly selected testing set in cross validation.
 #'

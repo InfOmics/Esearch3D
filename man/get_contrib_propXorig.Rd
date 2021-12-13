@@ -7,9 +7,9 @@
 get_contrib_propXorig(ff_prop, no_cores = 1)
 }
 \arguments{
-\item{ff_prop}{Matrix of propagated profiles: seed nodes at the columns and target nodes at the rows}
+\item{ff_prop}{numeric matrix of propagated profiles: seed nodes at the columns and target nodes at the rows}
 
-\item{no_cores}{Default 1, An integer value greater than 0 indicating the number of cores to use for parallel computing}
+\item{no_cores}{Default 1, An integer value greater than 0 indicating the number of cores to use for computing in parallel this task}
 }
 \value{
 A list with contr_prop_l: For each seed node as element of the list, the vector of the targets nodes which receive information from it

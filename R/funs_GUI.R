@@ -1,15 +1,15 @@
-#' Create an igraph network object for visualization purposes
+#' Create an igraph object of the chromatin interaction network (CIN) for visualization purposes
 #'
-#' Given the input and output of a two step network based propagation, it assembles an igraph object with all
+#' Given the input and output of the two step network based propagation, it assembles an igraph object of the CIN with all
 #' the information included in order to be visualized or analysed
 #'
-#' @param g_net edge list matrix of the gene gene interaction network
-#' @param input_m sample's profile of interest before the propagation
-#' @param gf_prop sample's profile of interest after the first step of propagation with the gene-gene interaction network
+#' @param g_net Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments
+#' @param input_m numeric matrix of a cell expression profile before the propagation
+#' @param gf_prop numeric matrix of a cell profile after the first step of the propagation applied with only the gene-genic fragment component of the CIN
 #' @param ann_net_b matrix, for each row presents the gene identifier, the chromosome in which the gene is, the starting end ending position in the sequence.
-#' @param frag_pattern string, initial character of the fragments name (e.g. "F")
-#' @param ff_net edge list matrix of the gene fragment interaction network
-#' @param ff_prop sample's profile of interest after the second step of propagation with the gene-fragment interaction network
+#' @param frag_pattern string, initial character of the fragments name (e.g. "F" or "Frag")
+#' @param ff_net Edge list of the chromatin interaction network such that first and second column are "FragX" fragments
+#' @param ff_prop numeric matrix of a cell profile after the second step of the propagation applied with the fragment-fragment component of the CIN
 #' @return igraph object
 #' @import igraph
 #' @export

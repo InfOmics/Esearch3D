@@ -7,7 +7,7 @@
 merge_prop_info(ff_prop, info)
 }
 \arguments{
-\item{ff_prop}{Propagation result obtained with the second step of the overall propagation}
+\item{ff_prop}{Propagation result obtained with the second step of the multi-gene two-step propagation}
 
 \item{info}{dataframe, first column is character vector of nodes, second colum is numeric vector of number of enhancer annotations associated to a node,
 third column is the binarized version of the second column (1 the node has enhancer annotations, 0 otherwise), the
