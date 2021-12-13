@@ -40,10 +40,11 @@ devtools::install_github(
 
 There are the following vignettes:
 
-1. [Quick Start with Dummy data](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/Vignette.Rmd)
-2. [Vignette with TSS data without enhancer annotation](https://github.com/LucaGiudice/D3SearchE/blob/main/vignettes/TSS_vignette.Rmd)
-3. [Vignette with WG data without enhancer annotation](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/WG_vignette.Rmd)
-4. [Vignette with WG data with enhancer annotation and Machine Learning](https://github.com/LucaGiudice/Esearch3D/blob/main/vignettes/WG_ML_vignette.Rmd)
+1. [Quick Start with Dummy data](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/Vignette.html)
+2. [Vignette with TSS data without enhancer annotation](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/TSS_vignette.html)
+3. [Vignette with WG data without enhancer annotation](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_vignette.html)
+4. [Vignette with WG bait data with enhancer annotation and Machine Learning](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_ML_bait_vignette.html)
+5. [Vignette with WG other end data with enhancer annotation and Machine Learning](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_ML_OE_vignette.html)
 
 
 ## Representation of chromatin data
