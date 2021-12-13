@@ -16,6 +16,7 @@ Signals pertaining to transcriptional activation are transferred from enhancers 
 ## Citation
 
 Manindeer *, Giudice * et al. Esearch3D: Propagating gene expression in chromatin networks to illuminate active enhancers
+
 *equally contributed
 
 ## Install
