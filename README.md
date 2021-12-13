@@ -1,5 +1,7 @@
 # Esearch3D: predictor of enhancer activity <img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/logo.png" width=250 align="right" style="border:4px solid black;" />
 
+Signals pertaining to transcriptional activation are transferred from enhancers found in intergenic loci to genes in the form of transcription factors, cofactors, and various transcriptional machineries such as RNA Pol II. How and where this information is transmitted to and from is central for decoding the regulatory landscape of any gene and identifying enhancers. Esearch3D is an unsupervised algorithm to predict enhancers. It reverses engineering the flow of information and identifies intergenic regulatory enhancers using solely gene expression and 3D genomic data. It models chromosome conformation capture (3C) data as chromatin interaction network (CIN) and then exploits graph-theory algorithms to integrate RNA-seq data to calculate an imputed activity score (IAS) for intergenic regions.  We also provide a visualisation tool to allow an easy interpretation of the results.
+
 [![R-CMD-check](https://github.com/jokergoo/cola/workflows/R-CMD-check/badge.svg)](https://github.com/jokergoo/cola/actions)
 
 ## Features
@@ -13,8 +15,7 @@
 
 ## Citation
 
-Manindeer *, Giudice * et al. Esearch3D: Leveraging gene expression and chromatin architecture to predict intergenic enhancers
-
+Manindeer *, Giudice * et al. Esearch3D: Propagating gene expression in chromatin networks to illuminate active enhancers
 *equally contributed
 
 ## Install
