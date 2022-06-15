@@ -73,7 +73,7 @@ rwr_OVprop=function(g, input_m, norm = "column", no_cores=2, r = 0.8, stop_step=
   cat("**Performing two step propagation \n")
   start_time <- Sys.time()
   #Set input variables ----
-  if(class(g)=="igraph"){
+  if(class(g)[[1]]=="igraph"){
     g=igraph::simplify(g)
     Isolated=which(igraph::degree(g)==0)
     g = igraph::delete.vertices(g, Isolated)
@@ -81,7 +81,7 @@ rwr_OVprop=function(g, input_m, norm = "column", no_cores=2, r = 0.8, stop_step=
                                names = T, sparse = getIgraphOpt("sparsematrices"))
 
   }
-  if(class(g)=="matrix" | class(g)=="data.frame"){
+  if(class(g)[[1]]=="matrix" | class(g)[[1]]=="data.frame"){
     if(ncol(g)==2){
       g=igraph::graph_from_edgelist(g, directed = F)
       g=igraph::simplify(g)

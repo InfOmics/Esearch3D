@@ -223,7 +223,8 @@ fun2 <- function(subnet) {
 #' @import graphics
 #' @import stats
 #' @export
-start_GUI = function(net1, ann_net_b, chr_len, example=FALSE){
+start_GUI = function(net1, ann_net_b, chr_len){
+  existing_nodes<<-names(V(net1))
 
   #index annotated genes to chromosomes
   rownames(chr_len)=chr_len$chrom
@@ -232,12 +233,7 @@ start_GUI = function(net1, ann_net_b, chr_len, example=FALSE){
     index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
   }
   names(index_all)=paste("chr",names(index_all),sep="")
-
-  if(example){
-    for(i in 1:length(index_all)){
-      index_all[[i]]=seq(1,min(dim(ann_net_b)[1],5))
-    }
-  }
+  index_all[['all']]=existing_nodes
 
   #Get connected components
   dg<-decompose.graph(net1)
@@ -292,12 +288,13 @@ start_GUI = function(net1, ann_net_b, chr_len, example=FALSE){
       fluidRow(
         column(
           width = 12,
-          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices =names(index_all), multiple = FALSE),
+          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[1]]),
           sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
           selectizeInput(
-            'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = c("node1","node2"),
-            options = list(maxOptions = 2,placeholder = 'Please select an option below',
-                           onInitialize = I('function() { this.setValue(""); }'))
+            'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = NULL,
+            options = list(maxOptions = 2,placeholder = 'Type a gene',
+                           onInitialize = I('function() { this.setValue(""); }'),
+                           showAddOptionOnCreate=FALSE, create=T, persist=F)
           ),
           numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 0, min = 0, max = 100),
           br(),
@@ -348,29 +345,42 @@ start_GUI = function(net1, ann_net_b, chr_len, example=FALSE){
 
     observeEvent(input$chr,{
       cat("observeEvent chr \n")
-      value_max=chr_len[input$chr,]$length
-      element<<-ann_net_b[index_all[[input$chr]],]
-      updateSliderInput(session,"region",max=value_max,value = c(1,value_max),min = 1)
+      if (input$chr != 'all'){
+
+        value_max=chr_len[input$chr,]$length
+        element<<-ann_net_b[index_all[[input$chr]],] #retain only nodes in chr
+        element<<-element[element[,1] %in% existing_nodes,] #retain only nodes in net
+        updateSliderInput(session,"region",max=value_max,value = c(1,value_max),min = 1)
+      } else {
+        updateSelectizeInput(session, 'node', choices = existing_nodes, server = TRUE,options = list(maxOptions = length(existing_nodes)))
+      }
+
 
     })
 
     observeEvent(input$region,{
       cat("observeEvent region \n")
-      element_pos<-ifelse((element[,3]>=input$region[1] & element[,3]<=input$region[2]) |
-                            (element[,4]>=input$region[1] & element[,4]<=input$region[2]),TRUE,FALSE)
-      element_select<-element[element_pos,1]
+      if (input$chr != 'all'){
+        element_pos<-ifelse((element[,3]>=input$region[1] & element[,3]<=input$region[2]) |
+                              (element[,4]>=input$region[1] & element[,4]<=input$region[2]),TRUE,FALSE)
+        element_select<-element[element_pos,1]
+      } else {
+        element_select <- existing_nodes
+      }
 
-      updateSelectizeInput(session, 'node', choices = element_select, server = TRUE,options = list(maxOptions = length(element_select)))
+        updateSelectizeInput(session, 'node', choices = element_select, server = TRUE,options = list(maxOptions = length(element_select)))
 
     })
 
     #find the connected component to which the node belongs to...
     observeEvent(input$node, {
       cat("observeEvent node \n")
-      if (input$node == ""){
+      if (input$node == "" | !(input$node %in% existing_nodes)){
         return()
       }
       print(input$node)
+
+      comp <-c()
       for (i in 1:length(dg)) {
         if (input$node %in% name_in_dg[[i]]){
           comp<-dg[[i]]
@@ -379,57 +389,72 @@ start_GUI = function(net1, ann_net_b, chr_len, example=FALSE){
       }
       print(comp)
       #...and set the max distance based on the result
-      max=max(distances(comp,v=input$node, V(comp), weights=NULL))
-      cat("node max:");print(max);cat("\n")
-      updateNumericInput(session, "dist",value = 0, max = max)
-
+      if (length(comp)!=0){
+        max=max(distances(comp,v=input$node, V(comp), weights=NULL))
+        cat("node max:");print(max);cat("\n")
+        updateNumericInput(session, "dist",value = 0, max = max)
+      }
     })
 
 
     #reaction to search button
     observeEvent(input$button, {
       cat("observeEvent search button \n")
-      value_dist<<-input$dist
-      #generate the graph
-      subnet=make_ego_graph(net1, order = input$dist, nodes = input$node, mode = "all", mindist = 0)
-      plot_gr<<-subnet[[1]]
-      plot_gr<<-fun2(plot_gr)
-      #vertex_attr(plot_gr,"color",which(V(plot_gr)$name==input$node))<-"#00FF00"
-      dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
-      newValue=dati
-      value(newValue)
+
+      if (input$node %in% existing_nodes){
+
+        value_dist<<-input$dist
+        #generate the graph
+        subnet=make_ego_graph(net1, order = input$dist, nodes = input$node, mode = "all", mindist = 0)
+        plot_gr<<-subnet[[1]]
+        plot_gr<<-fun2(plot_gr)
+        #vertex_attr(plot_gr,"color",which(V(plot_gr)$name==input$node))<-"#00FF00"
+        dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
+        newValue=dati
+        value(newValue)
+      } else {
+        cat(input$node);
+        showNotification("Node not present in the network!",type='error')
+        return()
+      }
     })
 
     #reaction to more button
     observeEvent(input$morebutton, {
       cat("observeEvent more button \n")
-      value_dist<<-value_dist+1
-      cat("value_dist:",value_dist,"\n")
-      cat("input node:");print(input$node);cat("\n")
-      #generate the graph
-      subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
-      plot_gr<<-subnet[[1]]
-      plot_gr<<-fun2(plot_gr)
-      dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
-      newValue=dati
-      value(newValue)
+      if (input$node %in% existing_nodes){
+
+        value_dist<<-value_dist+1
+        cat("value_dist:",value_dist,"\n")
+        cat("input node:");print(input$node);cat("\n")
+        #generate the graph
+        subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
+        plot_gr<<-subnet[[1]]
+        plot_gr<<-fun2(plot_gr)
+        dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
+        newValue=dati
+        value(newValue)
+      } else {return()}
     })
 
     #reaction to less button
     observeEvent(input$lessbutton, {
       cat("observeEvent less button \n")
-      value_dist<<-value_dist-1
-      if(value_dist<0){
-        value_dist<<-0
-      }
+      if (input$node %in% existing_nodes){
 
-      #generate the graph
-      subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
-      plot_gr<<-subnet[[1]]
-      plot_gr<<-fun2(plot_gr)
-      dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
-      newValue=dati
-      value(newValue)
+        value_dist<<-value_dist-1
+        if(value_dist<0){
+          value_dist<<-0
+        }
+
+        #generate the graph
+        subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
+        plot_gr<<-subnet[[1]]
+        plot_gr<<-fun2(plot_gr)
+        dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
+        newValue=dati
+        value(newValue)
+      } else {return()}
     })
 
     #visualization of the visNetowrk
