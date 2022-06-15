@@ -87,7 +87,7 @@ rwr_OVprop=function(g, input_m, norm = "column", no_cores=2, r = 0.8, stop_step=
       g=igraph::simplify(g)
       Isolated = which(igraph::degree(g)==0)
       g = igraph::delete.vertices(g, Isolated)
-      adjM=igraph::as_adjacency_matrix(g, type = "both", attr = NULL, edges = F,
+      adjM=igraph::as_adjacency_matrix(g, type = "both", attr = NULL,
                                        names = T, sparse = igraph::getIgraphOpt("sparsematrices"))
     }else{
       adjM=g
