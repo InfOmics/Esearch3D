@@ -230,10 +230,13 @@ start_GUI = function(net1, ann_net_b, chr_len){
   rownames(chr_len)=chr_len$chrom
   index_all=list()
   for (i in c(1:19,"X","Y")){
-    index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
+      index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
   }
-  names(index_all)=paste("chr",names(index_all),sep="")
-  index_all[['all']]=existing_nodes
+  names(index_all) =paste("chr",names(index_all),sep="")
+  
+  index_all[['all']]=names(V(net1))
+  index_all=index_all[c('all',names(index_all)[-length(names(index_all))])]
+  
 
   #Get connected components
   dg<-decompose.graph(net1)
@@ -288,13 +291,12 @@ start_GUI = function(net1, ann_net_b, chr_len){
       fluidRow(
         column(
           width = 12,
-          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[1]]),
+          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[2]]),
           sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
           selectizeInput(
-            'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = NULL,
-            options = list(maxOptions = 2,placeholder = 'Type a gene',
-                           onInitialize = I('function() { this.setValue(""); }'),
-                           showAddOptionOnCreate=FALSE, create=T, persist=F)
+              'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = NULL,
+              options = list(showAddOptionOnCreate=FALSE,placeholder = 'Please select an option below',
+                             onInitialize = I('function() { this.setValue(""); }'), create=T, persist=F)
           ),
           numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 0, min = 0, max = 100),
           br(),

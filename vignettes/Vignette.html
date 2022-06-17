@@ -496,7 +496,7 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8);head(ff_
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern=&quot;F&quot;,ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b, chr_len, example=T)
+start_GUI(net, ann_net_b, chr_len)
 #&gt; PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.</code></pre>
 </div>
 <div id="single-gene-network-based-propagation" class="section level1">
@@ -540,7 +540,7 @@ colnames(sff_prop)=gene_in</code></pre>
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern=&quot;F&quot;,ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b, chr_len, example=T)</code></pre>
+start_GUI(net, ann_net_b, chr_len, example)</code></pre>
 </div>
 
 
