@@ -27,7 +27,7 @@ Manindeer *, Giudice * et al. Esearch3D: Propagating gene expression in chromati
 install.packages("devtools")
 install.packages("htmltools", version="0.5.2", type="source")
 devtools::install_github(
-  repo="LucaGiudice/Esearch3D",
+  repo="Cengoni/Esearch3D",
   ref = "main",
   dependencies = "Depends",
   upgrade = "always",
