@@ -232,12 +232,17 @@ start_GUI = function(net1, ann_net_b, chr_len){
   for (i in c(1:19,"X","Y")){
       index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
   }
-  names(index_all) =paste("chr",names(index_all),sep="")
+  names(index_all)=paste("chr",names(index_all),sep="")
   
   index_all[['all']]=names(V(net1))
   index_all=index_all[c('all',names(index_all)[-length(names(index_all))])]
   
-
+  if (length(existing_nodes)>100) {
+      selected_chr='chr1'
+  } else {
+      selected_chr='all'
+  }
+  
   #Get connected components
   dg<-decompose.graph(net1)
   length_dg=1:length(dg)
@@ -291,7 +296,7 @@ start_GUI = function(net1, ann_net_b, chr_len){
       fluidRow(
         column(
           width = 12,
-          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[2]]),
+          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=selected_chr),
           sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
           selectizeInput(
               'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = NULL,
