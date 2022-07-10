@@ -209,7 +209,6 @@ fun2 <- function(subnet) {
 #' @import shiny
 #' @import shinydashboard
 #' @import shinyjs
-#' @import RCy3
 #' @import visNetwork
 #' @import plotfunctions
 #' @import fields
@@ -360,9 +359,16 @@ start_GUI = function(net1, ann_net_b, chr_len){
 
         #output of the complete legend
         output$legend <- renderDataTable({
+          cat("observeEvent renderDataTable \n")
+
 
           data_leg<-value()$nodes
-          cols=c("label","shape","expr","propagation","color","color_rel","title","id")
+          if (is.null(ann_net_b)){
+            cols=c("label","shape","expr","propagation","color","color_rel","id")
+          } else {
+            cols=c("label","shape","expr","propagation","color","color_rel","title","id")
+
+          }
           datatable(data_leg[,cols],options=list(columnDefs=list(list(visible=F,targets=c(1,2,7,8)))),colnames =c("Starting expression"="expr", "Propagation"="propagation", "Color based on the global network"="color", "Color based on the subnetwork"="color_rel")) %>%
             formatStyle (columns = "Color based on the global network", backgroundColor=styleEqual(data_leg$color ,as.character(data_leg$color)), color=styleEqual(data_leg$color ,as.character(data_leg$color))) %>%
             formatStyle (columns = "Color based on the subnetwork", backgroundColor=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)), color=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)))
@@ -473,7 +479,6 @@ start_GUI = function(net1, ann_net_b, chr_len){
       if(is.null(value())){
         return()
       }
-
       if(input$relativebox==TRUE) {
         if (length(value()$nodes$propagation)==1) {
           legend("bottomright", bty = "n", fill=value()$nodes$color_rel,legend=round(value()$nodes$propagation, digits=2), border = 'black',cex = 1.2)
@@ -489,7 +494,6 @@ start_GUI = function(net1, ann_net_b, chr_len){
         my_palette    = colorRampPalette(c('white','orange1'))
         image.plot(legend.only=T, horizontal=F, legend.shrink=0.5, legend.width=0.65, col= my_palette(5000), zlim=zlim, axes=F,
                    axis.args=list(at=zlim, labels=zlim),smallplot=c(0.1,0.2,0.1,0.9))
-
       }
 
     })
@@ -549,9 +553,8 @@ toolkitf <- function(net1, ann_net_b, frag_pattern = "F", ff_net = NULL) {
   }
   frag_names=data.frame(names=toolnames[frag_position])
 
-  if (!is.null(ann_net_b)){
-    data_annotation=merge(frag_names, ann_net_b, by.x="names", by.y="ID", sort=F)
-  }
+  data_annotation=merge(frag_names, ann_net_b, by.x="names", by.y="ID", sort=F)
+
 
   #correct indices for annotation
   ann_frag_position=which(toolnames %in% data_annotation[,1])

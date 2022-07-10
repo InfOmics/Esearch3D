@@ -108,7 +108,7 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=2, r=0.8)
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b, chr_len, example=T)
+start_GUI(net, ann_net_b, chr_len)
 
 #Single gene propagation -----
 degree = 3
