@@ -125,7 +125,7 @@ colnames(sff_prop)=gene_in
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b, chr_len, example=T)
+start_GUI(net, ann_net_b, chr_len)
 ```
 
 ### GUI

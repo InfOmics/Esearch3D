@@ -19,8 +19,7 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
   #Create the joint network
   if(is.null(ff_net)){
     data_net = g_net
-  }
-  else{
+  } else{
     data_net=rbind(g_net, ff_net)
     frag_pattern=paste("^",frag_pattern,sep="")
   }
@@ -38,8 +37,7 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
   #Merge the two propagations
   if(is.null(ff_net)){
     merged_prop = gf_prop
-  }
-  else{
+  } else{
     check=!(rownames(gf_prop) %in% rownames(ff_prop))
     merged_prop=rbind(gf_prop[check,],ff_prop)
     rownames(merged_prop)[1:(sum(check))]=rownames(gf_prop)[check]
@@ -68,7 +66,7 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
   edge_group=rep("orange",nrow(net_m))
   if(!is.null(ff_net)){
     gene_indxs=grep(frag_pattern,V(net1)$name,invert = T)
-  }else {
+  } else {
      gene_indxs = 1:length(V(net1))
   }
   net1=igraph::set.vertex.attribute(net1,name="shape",value="circle",index = igraph::V(net1)[gene_indxs])
@@ -88,8 +86,9 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
   V(net1)$propagation=color_info[,2]
   V(net1)$expr=color_info[,4]
 
-  net1=toolkitf(net1,ann_net_b,frag_pattern,ff_net)
-
+  if (!is.null(ann_net_b)){
+    net1=toolkitf(net1,ann_net_b,frag_pattern,ff_net)
+  }
   return(net1)
 }
 
@@ -226,23 +225,14 @@ fun2 <- function(subnet) {
 start_GUI = function(net1, ann_net_b, chr_len){
   existing_nodes<<-names(V(net1))
 
-  #index annotated genes to chromosomes
-  rownames(chr_len)=chr_len$chrom
-  index_all=list()
-  for (i in c(1:19,"X","Y")){
-      index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
-  }
-  names(index_all)=paste("chr",names(index_all),sep="")
-  
-  index_all[['all']]=names(V(net1))
-  index_all=index_all[c('all',names(index_all)[-length(names(index_all))])]
-  
-  if (length(existing_nodes)>100) {
-      selected_chr='chr1'
-  } else {
-      selected_chr='all'
-  }
-  
+  # #index annotated genes to chromosomes
+  # rownames(chr_len)=chr_len$chrom
+  # index_all=list()
+  # for (i in c(1:19,"X","Y")){
+  #     index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
+  # }
+  # names(index_all)=paste("chr",names(index_all),sep="")
+
   #Get connected components
   dg<-decompose.graph(net1)
   length_dg=1:length(dg)
@@ -255,12 +245,12 @@ start_GUI = function(net1, ann_net_b, chr_len){
     wp <- wellPanel(
       h3("Legend",style="color:#0066CC"),
       fluidRow(
-        column(12,h5(tags$b("Node's shape: "))),
-        column(6,h5(tags$b("Genes")),icon("fas fa-circle")),
-        column(6,h5(tags$b("Fragments")),icon("fas fa-square"),style="height:100px")
+        column(12,h5(tags$b("Node's shape: ")),style="color:#0066CC"),
+        column(6,h5(tags$b("Genes")),icon("fas fa-circle"),style="color:#000000"),
+        column(6,h5(tags$b("Fragments")),icon("fas fa-square"),style="color:#000000")
       ),
       fluidRow(
-        column(12,h5(tags$b("Edge's color: "))),
+        column(12,h5(tags$b("Edge's color: ")),style="color:#0066CC"),
         column(6,h5(tags$b("Gene-fragment or gene-gene connection: orange")), style="color:#E96928"),
         column(6,h5(tags$b("Fragment-fragment connection: purple")),style="color:#B616DE")
       ),
@@ -272,11 +262,11 @@ start_GUI = function(net1, ann_net_b, chr_len){
     wp <- wellPanel(
       h3("Legend",style="color:#0066CC"),
       fluidRow(
-        column(12,h5(tags$b("Node's shape: "))),
-        column(6,h5(tags$b("Genes")),icon("fas fa-circle")),
+        column(12,h5(tags$b("Node's shape: ")),style="color:#0066CC"),
+        column(6,h5(tags$b("Genes")),icon("fas fa-circle"),style="color:#000000"),
       ),
       fluidRow(
-        column(12,h5(tags$b("Edge's color: "))),
+        column(12,h5(tags$b("Edge's color: ")),style="color:#0066CC"),
         column(6,h5(tags$b("Gene-gene connection: orange")), style="color:#E96928"),
       ),
       br(),
@@ -296,19 +286,18 @@ start_GUI = function(net1, ann_net_b, chr_len){
       fluidRow(
         column(
           width = 12,
-          selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=selected_chr),
-          sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
+          #selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[1]]),
+          #sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
           selectizeInput(
-              'node', shiny::HTML("<p><span style='color: blue'>Select or type node</span></p>"), choices = NULL,
-              options = list(showAddOptionOnCreate=FALSE,placeholder = 'Please select an option below',
-                             onInitialize = I('function() { this.setValue(""); }'), create=T, persist=F)
+              'node', shiny::HTML("<p><span style='color: blue'>Type a node</span></p>"), choices = ""#,
+              #options = list(onInitialize = I('function() { this.setValue("G1"); }'),
+              #               options=existing_nodes)
           ),
-          numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 0, min = 0, max = 100),
+          numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 1, min = 1, max = 100),
           br(),
-          actionButton("button","Search", style="background-color:#0066CC; color:#FFF; border-color: #004C99")
-        )
+          wp
       )
-
+     )
     ),
     dashboardBody(
       tags$head(tags$style(HTML('.content-wrapper, .right-side {
@@ -318,13 +307,20 @@ start_GUI = function(net1, ann_net_b, chr_len){
       }
 '))),
 
+      fluidRow(
+        column(6,checkboxInput("relativebox","Scale colours based on this subnetwork", value = FALSE, width = NULL)),
+        column(2,downloadButton("export","Download html file",style="background-color:#0066CC; color:#FFF; border-color: #004C99")),
+        column(3,downloadButton("export2","Download GML file",style="background-color:#0066CC; color:#FFF; border-color: #004C99"),offset=1)
+
+      ),
+
 
       useShinyjs(),
       fluidRow(class="myRow",
                column(
                  width = 9,
-                 visNetworkOutput("network")#,
-                 #div(style = "height:1000px")
+                 visNetworkOutput("network",height='750'),
+
                ),
                column(width=3, fluid=FALSE,
                       plotOutput("legendG")#,
@@ -332,81 +328,23 @@ start_GUI = function(net1, ann_net_b, chr_len){
                )
       ),
 
-      checkboxInput("relativebox","Scale colours based by only this subnetwork", value = FALSE, width = NULL),
-      fluidRow(
-        column(1,actionButton("morebutton","More", style="background-color:#0066CC; color:#FFF; border-color: #004C99", offset=0)),
-        column(1,actionButton("lessbutton","Less", style="background-color:#0066CC; color:#FFF; border-color: #004C99")),
-        column(3,actionButton("cys","Open in cytoscape", style="background-color:#0066CC; color:#FFF; border-color: #004C99"),offset = 5),
-        column(2,downloadButton("export",style="background-color:#0066CC; color:#FFF; border-color: #004C99"))
-      ),
-      br(),
-      #legend space
-      wp
     )
   )
 
-
   server <- function(input, output, session) {
 
+    # take first node not being a fragment
+    first_node <- V(net)[which(igraph::get.vertex.attribute(net)$shape != "square")][[1]]$name
+
+
+    updateSelectizeInput(session, 'node', choices=existing_nodes, selected=first_node, server = TRUE,options = list(options = existing_nodes))
     value<-reactiveVal(NULL)
-
-    observeEvent(input$chr,{
-      cat("observeEvent chr \n")
-      if (input$chr != 'all'){
-
-        value_max=chr_len[input$chr,]$length
-        element<<-ann_net_b[index_all[[input$chr]],] #retain only nodes in chr
-        element<<-element[element[,1] %in% existing_nodes,] #retain only nodes in net
-        updateSliderInput(session,"region",max=value_max,value = c(1,value_max),min = 1)
-      } else {
-        updateSelectizeInput(session, 'node', choices = existing_nodes, server = TRUE,options = list(maxOptions = length(existing_nodes)))
-      }
-
-
-    })
-
-    observeEvent(input$region,{
-      cat("observeEvent region \n")
-      if (input$chr != 'all'){
-        element_pos<-ifelse((element[,3]>=input$region[1] & element[,3]<=input$region[2]) |
-                              (element[,4]>=input$region[1] & element[,4]<=input$region[2]),TRUE,FALSE)
-        element_select<-element[element_pos,1]
-      } else {
-        element_select <- existing_nodes
-      }
-
-        updateSelectizeInput(session, 'node', choices = element_select, server = TRUE,options = list(maxOptions = length(element_select)))
-
-    })
-
-    #find the connected component to which the node belongs to...
-    observeEvent(input$node, {
-      cat("observeEvent node \n")
-      if (input$node == "" | !(input$node %in% existing_nodes)){
-        return()
-      }
-      print(input$node)
-
-      comp <-c()
-      for (i in 1:length(dg)) {
-        if (input$node %in% name_in_dg[[i]]){
-          comp<-dg[[i]]
-          break
-        }
-      }
-      print(comp)
-      #...and set the max distance based on the result
-      if (length(comp)!=0){
-        max=max(distances(comp,v=input$node, V(comp), weights=NULL))
-        cat("node max:");print(max);cat("\n")
-        updateNumericInput(session, "dist",value = 0, max = max)
-      }
-    })
 
 
     #reaction to search button
-    observeEvent(input$button, {
-      cat("observeEvent search button \n")
+    react<-function() {
+     cat("observeEvent react \n")
+
 
       if (input$node %in% existing_nodes){
 
@@ -415,54 +353,66 @@ start_GUI = function(net1, ann_net_b, chr_len){
         subnet=make_ego_graph(net1, order = input$dist, nodes = input$node, mode = "all", mindist = 0)
         plot_gr<<-subnet[[1]]
         plot_gr<<-fun2(plot_gr)
-        #vertex_attr(plot_gr,"color",which(V(plot_gr)$name==input$node))<-"#00FF00"
         dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
         newValue=dati
         value(newValue)
+
+
+        #output of the complete legend
+        output$legend <- renderDataTable({
+
+          data_leg<-value()$nodes
+          cols=c("label","shape","expr","propagation","color","color_rel","title","id")
+          datatable(data_leg[,cols],options=list(columnDefs=list(list(visible=F,targets=c(1,2,7,8)))),colnames =c("Starting expression"="expr", "Propagation"="propagation", "Color based on the global network"="color", "Color based on the subnetwork"="color_rel")) %>%
+            formatStyle (columns = "Color based on the global network", backgroundColor=styleEqual(data_leg$color ,as.character(data_leg$color)), color=styleEqual(data_leg$color ,as.character(data_leg$color))) %>%
+            formatStyle (columns = "Color based on the subnetwork", backgroundColor=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)), color=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)))
+
+
+        })
       } else {
-        cat(input$node);
-        showNotification("Node not present in the network!",type='error')
+        # cat(input$node);
+        # showNotification("Node not present in the network!",type='error')
         return()
       }
-    })
+    }
 
-    #reaction to more button
-    observeEvent(input$morebutton, {
-      cat("observeEvent more button \n")
-      if (input$node %in% existing_nodes){
 
-        value_dist<<-value_dist+1
-        cat("value_dist:",value_dist,"\n")
-        cat("input node:");print(input$node);cat("\n")
-        #generate the graph
-        subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
-        plot_gr<<-subnet[[1]]
-        plot_gr<<-fun2(plot_gr)
-        dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
-        newValue=dati
-        value(newValue)
-      } else {return()}
-    })
 
-    #reaction to less button
-    observeEvent(input$lessbutton, {
-      cat("observeEvent less button \n")
-      if (input$node %in% existing_nodes){
+    #find the connected component to which the node belongs to...
+    observeEvent(input$node, {
 
-        value_dist<<-value_dist-1
-        if(value_dist<0){
-          value_dist<<-0
+      cat("observeEvent node \n")
+      if (input$node == ""){
+        print("Empty node")
+      } else {
+        if (input$node != '' & !(input$node %in% existing_nodes)){
+          cat(input$node);
+          cat("Node not present in the network!\n")
+          showNotification("Node not present in the network!",type='error')
+          return()
         }
 
-        #generate the graph
-        subnet=make_ego_graph(net1, order = value_dist, nodes = input$node, mode = "all", mindist = 0)
-        plot_gr<<-subnet[[1]]
-        plot_gr<<-fun2(plot_gr)
-        dati<-toVisNetworkData(plot_gr,idToLabel = TRUE)
-        newValue=dati
-        value(newValue)
-      } else {return()}
-    })
+        comp <-c()
+        for (i in 1:length(dg)) {
+          if (input$node %in% name_in_dg[[i]]){
+            comp<-dg[[i]]
+            break
+          }
+        }
+        print(comp)
+        #...and set the max distance based on the result
+        if (length(comp)!=0){
+          max=max(distances(comp,v=input$node, V(comp), weights=NULL))
+          cat("node max:");print(max);cat("\n")
+          updateNumericInput(session, "dist",value = 1, max = max)
+        }
+
+      react()
+      }
+    }, ignoreInit = TRUE)
+
+    observeEvent(input$dist, {  if (input$node != ""){react()}})
+
 
     #visualization of the visNetowrk
     output$network <- renderVisNetwork({
@@ -518,6 +468,7 @@ start_GUI = function(net1, ann_net_b, chr_len){
     output$legendG=renderPlot({
       cat("observeEvent renderPlot \n")
       par(bg="#E2ECEB")
+
       emptyPlot(0,0,axes=F)
       if(is.null(value())){
         return()
@@ -543,33 +494,28 @@ start_GUI = function(net1, ann_net_b, chr_len){
 
     })
 
-    #button to open the graph in cytoscape
-    observeEvent(input$cys,{
-      cat("observeEvent cys \n")
-      cytoscapePing()
-      createNetworkFromIgraph(plot_gr,"myIgraph")
-    })
-
-
     #download network
     output$export <- downloadHandler(
-      filename = "Network.html",
+      filename = function() {
+        paste('network-', Sys.Date(), '.html', sep='')
+      },
       content = function(con) {
-        visSave(vis, con)
-      })
-
-    #output of the complete legend
-    output$legend <- renderDataTable({
-      if(input$button) {
-        data_leg<-value()$nodes
-        cols=c("label","shape","expr","propagation","color","color_rel","title","id")
-        datatable(data_leg[,cols],options=list(columnDefs=list(list(visible=F,targets=c(1,2,7,8)))),colnames =c("Starting expression"="expr", "Propagation"="propagation", "Color based on the global network"="color", "Color based on the subnetwork"="color_rel")) %>%
-          formatStyle (columns = "Color based on the global network", backgroundColor=styleEqual(data_leg$color ,as.character(data_leg$color)), color=styleEqual(data_leg$color ,as.character(data_leg$color))) %>%
-          formatStyle (columns = "Color based on the subnetwork", backgroundColor=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)), color=styleEqual(data_leg$color_rel ,as.character(data_leg$color_rel)))
+        vis_print <- vis %>%  visOptions(width='100%',height='600px')
+        visSave(vis_print, con)
 
       }
+    )
 
-    })
+    output$export2<- downloadHandler(
+      filename = function() {
+        paste('network-', Sys.Date(), '.gml', sep='')
+      },
+      content = function(con) {
+        write_graph(plot_gr,con,'gml')
+
+      }
+    )
+
 
   }
 
@@ -603,7 +549,9 @@ toolkitf <- function(net1, ann_net_b, frag_pattern = "F", ff_net = NULL) {
   }
   frag_names=data.frame(names=toolnames[frag_position])
 
-  data_annotation=merge(frag_names, ann_net_b, by.x="names", by.y="ID", sort=F)
+  if (!is.null(ann_net_b)){
+    data_annotation=merge(frag_names, ann_net_b, by.x="names", by.y="ID", sort=F)
+  }
 
   #correct indices for annotation
   ann_frag_position=which(toolnames %in% data_annotation[,1])
