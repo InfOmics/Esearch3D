@@ -152,7 +152,7 @@ combine_netWprop = function(net, propag, totaldataframe) {
   miniprop=dtinfo[order(dtinfo$value),]
 
   my_resolution = 5000
-  my_palette    = colorRampPalette(c('white','orange1'))
+  my_palette = colorRampPalette(c('white','orange1'))
   my_colors = my_palette(my_resolution)[as.numeric(cut(miniprop[,2], breaks=my_resolution))]
 
   miniprop[,3]=my_colors
@@ -224,14 +224,6 @@ fun2 <- function(subnet) {
 start_GUI = function(net1, ann_net_b, chr_len){
   existing_nodes<<-names(V(net1))
 
-  # #index annotated genes to chromosomes
-  # rownames(chr_len)=chr_len$chrom
-  # index_all=list()
-  # for (i in c(1:19,"X","Y")){
-  #     index_all[[i]]=which(ann_net_b[,"chr"] %in% paste("chr",i,sep=""))
-  # }
-  # names(index_all)=paste("chr",names(index_all),sep="")
-
   #Get connected components
   dg<-decompose.graph(net1)
   length_dg=1:length(dg)
@@ -285,14 +277,10 @@ start_GUI = function(net1, ann_net_b, chr_len){
       fluidRow(
         column(
           width = 12,
-          #selectInput("chr", shiny::HTML("<p><span style='color: blue'>Select nodes by chromosome</span></p>"),choices=names(index_all), multiple = FALSE, selected=names(index_all)[[1]]),
-          #sliderInput( "region", shiny::HTML("<p><span style='color: blue'>Select nodes by genome region</span></p>"),min=1,max=195456987,step=10000,value=c(1,195456987)),
           selectizeInput(
-              'node', shiny::HTML("<p><span style='color: blue'>Type a node</span></p>"), choices = ""#,
-              #options = list(onInitialize = I('function() { this.setValue("G1"); }'),
-              #               options=existing_nodes)
+              'node', shiny::HTML("<p><span style='color: blue'>Type a node</span></p>"), choices = ""
           ),
-          numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 1, min = 1, max = 100),
+          numericInput("dist", shiny::HTML("<p><span style='color: blue'>Distance from selected node</span></p>"), 1, min = 1, max = 4),
           br(),
           wp
       )
@@ -335,18 +323,16 @@ start_GUI = function(net1, ann_net_b, chr_len){
     # take first node not being a fragment
     first_node <- V(net)[which(igraph::get.vertex.attribute(net)$shape != "square")][[1]]$name
 
-
+    # add all nodes in the list
     updateSelectizeInput(session, 'node', choices=existing_nodes, selected=first_node, server = TRUE,options = list(options = existing_nodes))
     value<-reactiveVal(NULL)
 
-
-    #reaction to search button
+    #reaction to user action
     react<-function() {
      cat("observeEvent react \n")
 
 
       if (input$node %in% existing_nodes){
-
         value_dist<<-input$dist
         #generate the graph
         subnet=make_ego_graph(net1, order = input$dist, nodes = input$node, mode = "all", mindist = 0)
@@ -356,11 +342,9 @@ start_GUI = function(net1, ann_net_b, chr_len){
         newValue=dati
         value(newValue)
 
-
         #output of the complete legend
         output$legend <- renderDataTable({
           cat("observeEvent renderDataTable \n")
-
 
           data_leg<-value()$nodes
           if (is.null(ann_net_b)){
@@ -407,11 +391,11 @@ start_GUI = function(net1, ann_net_b, chr_len){
         }
         print(comp)
         #...and set the max distance based on the result
-        if (length(comp)!=0){
-          max=max(distances(comp,v=input$node, V(comp), weights=NULL))
-          cat("node max:");print(max);cat("\n")
-          updateNumericInput(session, "dist",value = 1, max = max)
-        }
+        # if (length(comp)!=0){
+        #   max=max(distances(comp,v=input$node, V(comp), weights=NULL))
+        #   cat("node max:");print(max);cat("\n")
+        #   updateNumericInput(session, "dist",value = 1, max = max)
+        # }
 
       react()
       }

@@ -10,8 +10,8 @@ Signals pertaining to transcriptional activation are transferred from enhancers 
 2. It reverse engineers the flow of information modeled by enhancers that act as regulatory sources to increase the rate of transcription of their target genes
 3. It leverages the relationship between the 3D organisation of chromatin and global gene expression
 4. It represents a novel enhancer associated feature that can be used to predict enhancers
-5. It provides a graphical user interface to interact with the network composed by genes, enhancers and intergenic loci associated to thier imputed activity score
-6. It includes a parallelized version of the network-based algorithm called random walk with restart that works on sparce matrices to reduce the system usage
+5. It provides a graphical user interface to interact with the network composed by genes, enhancers and intergenic loci associated to their imputed activity score
+6. It includes a parallelized version of the network-based algorithm called random walk with restart that works on sparse matrices to reduce the system usage
 
 ## Citation
 
@@ -27,7 +27,7 @@ Manindeer *, Giudice * et al. Esearch3D: Propagating gene expression in chromati
 install.packages("devtools")
 install.packages("htmltools", version="0.5.2", type="source")
 devtools::install_github(
-  repo="Cengoni/Esearch3D",
+  repo="Cengoni/Esearch3D", #  to be changed to repo="InfOmics/Esearch3D",
   ref = "main",
   dependencies = "Depends",
   upgrade = "always",
@@ -40,12 +40,9 @@ devtools::install_github(
 
 There are the following vignettes:
 
-1. [Quick Start with Dummy data](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/Vignette.html)
-2. [Vignette with TSS data without enhancer annotation](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/TSS_vignette.html)
-3. [Vignette with WG data without enhancer annotation](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_vignette.html)
-4. [Vignette with WG bait data with enhancer annotation and Machine Learning](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_ML_bait_vignette.html)
-5. [Vignette with WG other end data with enhancer annotation and Machine Learning](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_ML_OE_vignette.html)
-
+1. [Vignette with WG data ](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_vignette.html)
+2. [Vignette with WG bait data and other end data and Machine Learning](TBD)
+ 
 
 ## Representation of chromatin data
 <p align="center">
@@ -69,7 +66,7 @@ Schematic diagram of the network propagation used to impute activity values at i
 - B. Gene activity is propagated from gene nodes to genic chromatin nodes in propagation step one. Activity scores are then imputed in intergenic chromatin nodes by propagating the scores from genic chromatin nodes. 
 - C. Ranking of non-genic nodes by the imputed activity score to identify high confidence enhancer nodes.
 
-## Difference from two step propagation (aka multi gene propagation) and the single gene propagation
+## Difference between two step propagation (aka multi gene propagation) and single gene propagation
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/single.png" width=650 />
@@ -86,17 +83,17 @@ Few lines of code to run *D3SearchE* prediction:
 library(Esearch3D)
 
 #Load and set up the example data ----
-data("dummy_data_l")
+data("wg_data_l")
 #gene - fragment interaction network
-gf_net=dummy_data_l$gf_net
+gf_net=wg_data_ll$gf_net
 #gene-fragment-fragment interaction network
-ff_net=dummy_data_l$ff_net
+ff_net=wg_data_l$ff_net
 #sample profile with starting values for genes and fragments
-input_m=dummy_data_l$input_m
+input_m=wg_data_l$input_m
 #length of chromosomes
-chr_len=dummy_data_l$chr_len
+chr_len=wg_data_l$chr_len
 #gene annotation
-ann_net_b=dummy_data_l$ann_net_b
+ann_net_b=wg_data_l$ann_net_b
 
 #Two step propagation -----
 #Propagation over the gene-fragment network
@@ -111,6 +108,7 @@ net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_
 start_GUI(net, ann_net_b, chr_len)
 
 #Single gene propagation -----
+(TO BE CHANGED?)
 degree = 3
 frag_pattern = "F"
 gene_in=c("G1")
@@ -131,11 +129,11 @@ start_GUI(net, ann_net_b, chr_len)
 ### GUI
 
 1. It allows to explore a sample's profile after a network-based propagation
-2. It allows to investigate the imputed activity scores obtained by specific genes and their neighbourhood
-3. It allows to download the propagated network and to import it in cytoscape
+2. It allows to investigate the imputed activity scores obtained by specific genes and their neighborhood
+3. It allows to download the propagated network and to import it in Cytoscape
 
 ### Legend
-
+(TO BE CHANGED)
 <img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_overall.png" />
 
   1. Select nodes by chromosomes: allows to filter the network and to keep only those nodes (e.g. genes) that belong to a specific chromosome
@@ -148,6 +146,7 @@ start_GUI(net, ann_net_b, chr_len)
   8. Download: allows to download the image of the network visualized and created with the GUI
 
 ### Plots
+(TO BE CHANGED)
 
 Following plot shows you an example of how to interact with the GUI and its functionalities
 

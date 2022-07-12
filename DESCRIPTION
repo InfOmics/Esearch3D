@@ -2,9 +2,9 @@ Package: Esearch3D
 Type: Package
 Title: Leveraging gene expression and chromatin architecture to predict
         intergenic enhancers
-Version: 0.3.0
-Author: Giudice Luca
-Maintainer: Giudice Luca <luca.giudce@univr.it>
+Version: 0.4.0
+Author: Manindeer *, Giudice * et al. 
+Maintainer: Claudia Mengoni <claudia.mengoni@univr.it>
 Description: Software that leverages gene expression and chromatin architecture to predict intergenic enhancers and includes a graphic user interface to allow the interaction with single cell propagated profiles
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -27,4 +27,4 @@ Depends: R (>= 3.6.1),biomaRt (>= 2.0.0),plyr (>= 1.8.6),dplyr
 biocViews: IRanges (>= 2.20.0),biomaRt (>= 2.0.0)
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2021-12-13 15:44:55 UTC; lg
+Packaged: 2022-07-12 18:03:55 UTC; lg

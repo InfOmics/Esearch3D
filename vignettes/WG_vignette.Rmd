@@ -17,17 +17,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Esearch3D with promoter-genes connections
-Welcome to the third vignette of our software for the prediction of the activity of integenic fragments.
-We suggest to start from the first vignette because introduces the software. While, this vignette proposes a real application of Esearch3D and requires at least 32GB of RAM for being finished properly.
-It goes through all the main operations of the software with real data. Precisely, this vignette replicates the results of our software proposed in the publication where genes are connected to the chromatin fragemnt where their promoter map to. This creates the CIN network called: WG-based mESC DNaseI-capture CIN. 
-The only part that this vignette does not present is the classification of enhancers with machine learning.
-The latter topic is kept as last in order that only advance users can access to it.
-We hope that providing this vignette can help to understand the data, the operations and the results of our software.
+# Esearch3D  
+This vignette introduces how to use Esearch3D for the prediction of the activity of intergenic fragments. 
+It goes through all the main operations of the software showing a real application of the tool. Precisely, this vignette replicates the analysis of the mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset presented in the publication.  
 
 # Enviroment set up
-Let us clean the R enviroment, set the working directory, load the software package, set the random seed generator for reproducing always the same results and define the number of cores available in the computer to run the operations.
-Be careful: set up the number of cores based on your resources, if you are not secure how to, then just set equal to 2
+Let us clean the R environment, set the working directory, load the software package, set the random seed generator for reproducing always the same results and define the number of cores available in the computer to run the operations.
+Be careful: set up the number of cores based on your resources. If you are not sure, then just set it to 2
 
 ```{r setup}
 
@@ -55,7 +51,7 @@ n_cores=5
 ```
 
 # Data set up
-For this vignette, We created a DNaseI-capture HiC derived CIN whereby captured regions harbour DNaseI sensible regions in mouse embryonic stem cells (mESC), enriching for interactions of chromatin accessible regions. A  chromatin fragment representing a genomic locus is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the CIN. In this case, they are connected by an edge to the node that their promoter map to; we obtained the WG-based mESC DNaseI-capture CIN.
+For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected by edges to the fragments situated on the gene.
 
 ```{r loading of wg dataset}
 
@@ -75,9 +71,13 @@ ann_net_b=wg_data_l$ann_net_b
 gene_in=wg_data_l$gene_in
 
 ```
+
 # Multi-gene two-step propagation
-In the first propagation, the expression of the genes is propagated from their corresponding nodes into only the genic fragments. Be carefull: r is the isolation parameter, use low value for first step, use high value for second step
-In the second propagation, the gene expression is then propagated to the rest of the CIN. The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
+In the first propagation, the gene expression is propagated from their nodes into their directly connected genic fragments. 
+In the second propagation, the gene expression is then propagated to the rest of the CIN.
+
+Be careful: `r` is the isolation parameter, which reflects the percentage of information that is kept in the source nodes when propagating. In the first step we want the maximum amount of information to be propagated, so we use a low value. In the second step we can use higher values.
+The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
 
 ```{r two step propagation with random walk with restart}
 
@@ -89,32 +89,16 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
 
 ```
 
-Start the GUI with the following functions:
-```{r}
+# Network visualization
+Using the obtained propagation scores, we can create the final network and visualize it using a graphic interface.
+```{r network visualization}
 #Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
 
 #Start GUI
 start_GUI(net, ann_net_b, chr_len)
 ```
-
-# Single gene network-based propagation
-The software performs the propagation of individual genes of interest belonging to a cell's expression profile.
-It then returns how much each gene of interest contributed to give information to the fragments.
-It then returns how much each fragment received information from the genes of interest.
-This function helps to understand the contribution of the individual genes in the two-step standard propagation
-It requries the name of the genes of interest.
-It requires the string pattern composing the names of the fragments. For example, F due to F1, F2, F3 and so on.
-It requires the distance between the genes of interest and the fragments to investigate.
-
-```{r single gene propagation, eval = FALSE}
-
-#Single gene propagation -----
-output_path="sgPropagation_results.rda"
-contrXgene_l=rwr_SGprop(gf_net, ff_net, gene_in = gene_in$V2[3:4], frag_pattern="frag", out_rda=output_path, degree = 4, r1 = 0.1, r2 = 0.8, no_cores = n_cores)
-```
-
-
+ 
 
 
 
