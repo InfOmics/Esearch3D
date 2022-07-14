@@ -25,6 +25,6 @@ Depends: R (>= 3.6.1),biomaRt (>= 2.0.0),plyr (>= 1.8.6),dplyr
         0.2),mlr3tuning (>= 0.8),mlr3learners (>= 0.4),mlr3viz (>=
         0.5),DALEX (>= 2.0),DALEXtra (>= 2.0), rlang (>= 1.0.0)
 biocViews: IRanges (>= 2.20.0),biomaRt (>= 2.0.0)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 NeedsCompilation: no
 Packaged: 2022-07-12 18:03:55 UTC; lg

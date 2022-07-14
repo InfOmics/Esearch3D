@@ -21,7 +21,7 @@ create_net2plot(
 
 \item{gf_prop}{numeric matrix of a cell profile after the first step of the propagation applied with only the gene-genic fragment component of the CIN}
 
-\item{ann_net_b}{matrix, for each row presents the gene identifier, the chromosome in which the gene is, the starting end ending position in the sequence.}
+\item{ann_net_b}{data.frame, for each row presents the gene identifier, the chromosome in which the gene is, the starting and ending position in the sequence.}
 
 \item{frag_pattern}{string, initial character of the fragments name (e.g. "F" or "Frag")}
 

@@ -7,7 +7,7 @@
 rank_scale(v)
 }
 \arguments{
-\item{x}{numeric vector}
+\item{v}{numeric vector}
 }
 \value{
 Normalized vector based on max rank

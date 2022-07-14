@@ -6,7 +6,7 @@
 #' @param g_net Edge list of the chromatin interaction network such that first column are genes and second column are "FragX" fragments
 #' @param input_m numeric matrix of a cell expression profile before the propagation
 #' @param gf_prop numeric matrix of a cell profile after the first step of the propagation applied with only the gene-genic fragment component of the CIN
-#' @param ann_net_b matrix, for each row presents the gene identifier, the chromosome in which the gene is, the starting end ending position in the sequence.
+#' @param ann_net_b data.frame, for each row presents the gene identifier, the chromosome in which the gene is, the starting and ending position in the sequence.
 #' @param frag_pattern string, initial character of the fragments name (e.g. "F" or "Frag")
 #' @param ff_net Edge list of the chromatin interaction network such that first and second column are "FragX" fragments
 #' @param ff_prop numeric matrix of a cell profile after the second step of the propagation applied with the fragment-fragment component of the CIN
@@ -16,6 +16,12 @@
 #'
 create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
                           ff_net = NULL,ff_prop = NULL){
+
+  #Check annotation
+  if (!is.data.frame(ann_net_b)){
+    stop("ERROR! It is mandatory to provide annotation as a data frame using the parameter `ann_net_b`. Check documentation.")
+    }
+
   #Create the joint network
   if(is.null(ff_net)){
     data_net = g_net
@@ -72,8 +78,10 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
   net1=igraph::set.vertex.attribute(net1,name="shape",value="circle",index = igraph::V(net1)[gene_indxs])
   net1=igraph::set.edge.attribute(net1, name="color", value=edge_group)
   if(!is.null(ff_net)){
-    edge_group[grep(frag_pattern,net_m[,1])] = "purple"
-    edge_group[grep(frag_pattern,net_m[,2])] = "purple"
+    left_nodes_frag = grep(frag_pattern,net_m[,1])
+    right_nodes_frag = grep(frag_pattern,net_m[,2])
+    nodes_frag = intersect(left_nodes_frag,right_nodes_frag)
+    edge_group[nodes_frag] = "purple"
     net1=igraph::set.edge.attribute(net1, name="color", value=edge_group)
     #set genes as circles and fragments as squares and edges' colors
     frag_indxs=grep(frag_pattern,V(net1)$name,invert = F)
@@ -88,6 +96,9 @@ create_net2plot = function(g_net, input_m, gf_prop, ann_net_b, frag_pattern="F",
 
   if (!is.null(ann_net_b)){
     net1=toolkitf(net1,ann_net_b,frag_pattern,ff_net)
+  } else {
+    stop("ERROR! It is mandatory to provide a data frame of annotation using the parameter `ann_net_b`. Check documentation.")
+
   }
   return(net1)
 }
@@ -203,8 +214,6 @@ fun2 <- function(subnet) {
 #'
 #' @param net1 igraph object to visualize
 #' @param ann_net_b dataframe, specifies the genes positions (chromosome, start and end position)
-#' @param chr_len dataframe, specifies the chromosomes (first column) and their length  (second column)
-#' @param example boolean, show 5 genes to select as an example
 #' @return NULL
 #' @import shiny
 #' @import shinydashboard
@@ -221,7 +230,7 @@ fun2 <- function(subnet) {
 #' @import graphics
 #' @import stats
 #' @export
-start_GUI = function(net1, ann_net_b, chr_len){
+start_GUI = function(net1, ann_net_b){
   existing_nodes<<-names(V(net1))
 
   #Get connected components
@@ -348,7 +357,8 @@ start_GUI = function(net1, ann_net_b, chr_len){
 
           data_leg<-value()$nodes
           if (is.null(ann_net_b)){
-            cols=c("label","shape","expr","propagation","color","color_rel","id")
+            stop("ERROR! It is mandatory to provide a data frame of annotation using the parameter `ann_net_b`. Check documentation.")
+            #cols=c("label","shape","expr","propagation","color","color_rel","id")
           } else {
             cols=c("label","shape","expr","propagation","color","color_rel","title","id")
 
@@ -544,8 +554,8 @@ toolkitf <- function(net1, ann_net_b, frag_pattern = "F", ff_net = NULL) {
   ann_frag_position=which(toolnames %in% data_annotation[,1])
   frag_link=paste("<a target='_blank' href=https://genome.ucsc.edu/cgi-bin/hgTracks?db=mm10&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=",
     data_annotation$chr,"%3A",data_annotation$start,"%2D",data_annotation$end,
-    "&hgsid=981993861_VmexClFuvk6xFB6uwwbxkArgAkC9> Annotation of ",
-    data_annotation$names,"</a>",sep="")
+    "&hgsid=981993861_VmexClFuvk6xFB6uwwbxkArgAkC9> ",
+    data_annotation$chr,":",data_annotation$start,"-",data_annotation$end,sep="")
   vector_link=paste("<a target='_blank' href=https://www.genecards.org/cgi-bin/carddisp.pl?gene=",
     sep = "",symbol_names, "> GeneCards of ", symbol_names,"</a>")
 
