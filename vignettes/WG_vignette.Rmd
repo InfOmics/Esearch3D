@@ -26,7 +26,6 @@ Let us clean the R environment, set the working directory, load the software pac
 Be careful: set up the number of cores based on your resources. If you are not sure, then just set it to 2
 
 ```{r setup}
-
 #Clean workspace and memory ----
 rm(list=ls())
 gc()
@@ -51,28 +50,33 @@ n_cores=5
 ```
 
 # Data set up
-For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected by edges to the fragments situated on the gene.
+For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected to the fragments which map to the gene.
+The required data are:
+* fragment-fragment interaction matrix (`ff_net`)
+* gene-fragment interaction matrix (`gf_net`)
+* gene expression matrix (`input_m`)
+
 
 ```{r loading of wg dataset}
-
 #Load and set up the example data ----
 data("wg_data_l")
-#gene - fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net
-#gene-fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net
+#fragment-fragment interaction network generated from mESC_DNase_Net interactions data
+ff_net=wg_data_l$ff_net; head(ff_net)
+#gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
+gf_net=wg_data_l$gf_net; head(gf_net)
 #sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m
+input_m=wg_data_l$input_m; head(input_m)
 ```
 
-In order to use the GUI, it is necessary to provide a data frame with gene and fragment annotation. It has to be a 4-column data frame where the first column is the gene or fragment ID, the second is the chromosome, and the last two are start and end position.
+In order to use the GUI, it is necessary to also provide a data frame with genes and fragments annotation. It has to be a 4-column data frame where the first column is the gene or fragment ID, the second is the chromosome, and the last two are start and end position.
 
 ```{r GUI data} 
 #gene annotation
-ann_net_b=wg_data_l$ann_net_b 
+ann_net_b=wg_data_l$ann_net_b; head(ann_net_b)
 ```
 
 # Multi-gene two-step propagation
+Having loaded the required data, we proceed with the main operation for computing enhancer actitivy, the multi-gene two-step propagation.
 In the first propagation, the gene expression is propagated from their nodes into their directly connected genic fragments. 
 In the second propagation, the gene expression is then propagated to the rest of the network.
 
@@ -80,21 +84,19 @@ Be careful: `r` is the isolation parameter, which reflects the percentage of inf
 The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
 
 ```{r two step propagation with random walk with restart}
-
 #Two step propagation -----
 #Propagated for the network gene-fragment
 gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, r=0.1)
 #Propagated for the network fragment-fragment
 ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
-
 ```
 
 # Network visualization
-The obtained propagation scores, which are stored in ff_prop and gd_prop, can be used to create the final network and visualize it using a graphic interface. Remember that these functions require annotation.
+The obtained propagation scores, which are stored in ff_prop and gd_prop, can be used to create the final network and visualize it using a graphic interface. Remember that these functions require an annotation object to be provided. Additionally, the user has to specify in `frag_pattern` the string which allows to distinguish fragments IDs from genes.
 ```{r network visualization}
 #Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b)
+#start_GUI(net, ann_net_b) #uncomment and run to start the GUI
 ```

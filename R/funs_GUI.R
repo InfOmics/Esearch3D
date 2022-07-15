@@ -454,7 +454,7 @@ start_GUI = function(net1, ann_net_b){
         visEvents(stabilizationIterationsDone="function () {this.setOptions( { physics: false } );}") %>%
         visPhysics(maxVelocity = 50, minVelocity = 1) %>%
         visOptions(highlightNearest = list(enabled = T, hover = T),
-                   selectedBy = list(variable = "propagation_ranges" , multiple=T, sort=T, main="Select by propagation ranges",
+                   selectedBy = list(variable = "propagation_ranges" , multiple=T, sort=F, main="Select by propagation ranges",
                                      style = 'width: 220px; height: 26px;
                                    background: #f8f8f8;
                                    color: darkblue;

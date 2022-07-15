@@ -219,16 +219,44 @@ n_cores=5</code></pre>
 </div>
 <div id="data-set-up" class="section level1">
 <h1>Data set up</h1>
-<p>For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected by edges to the fragments situated on the gene.</p>
-<pre class="r"><code>
-#Load and set up the example data ----
+<p>For this vignette, we created a DNaseI-capture HiC derived network,
+whereby captured regions are DNaseI sensible regions from mouse
+embryonic stem cells (mESC). A chromatin fragment is represented as a
+node; a fragment-fragment interaction as an edge. We then integrated
+genes as nodes within the network. In this case, genes are connected to
+the fragments which map to the gene. The required data are: *
+fragment-fragment interaction matrix (<code>ff_net</code>) *
+gene-fragment interaction matrix (<code>gf_net</code>) * gene expression
+matrix (<code>input_m</code>)</p>
+<pre class="r"><code>#Load and set up the example data ----
 data(&quot;wg_data_l&quot;)
-#gene - fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net
-#gene-fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net
+#fragment-fragment interaction network generated from mESC_DNase_Net interactions data
+ff_net=wg_data_l$ff_net; head(ff_net)
+#&gt;      V1         V2     
+#&gt; [1,] &quot;frag4380&quot; &quot;frag1&quot;
+#&gt; [2,] &quot;frag4403&quot; &quot;frag2&quot;
+#&gt; [3,] &quot;frag4377&quot; &quot;frag3&quot;
+#&gt; [4,] &quot;frag4399&quot; &quot;frag4&quot;
+#&gt; [5,] &quot;frag4380&quot; &quot;frag6&quot;
+#&gt; [6,] &quot;frag4403&quot; &quot;frag7&quot;
+#gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
+gf_net=wg_data_l$gf_net; head(gf_net)
+#&gt;      V1          V2        
+#&gt; [1,] &quot;frag67024&quot; &quot;Adamts10&quot;
+#&gt; [2,] &quot;frag94676&quot; &quot;Skil&quot;    
+#&gt; [3,] &quot;frag99489&quot; &quot;Cnn3&quot;    
+#&gt; [4,] &quot;frag55533&quot; &quot;Kdelr3&quot;  
+#&gt; [5,] &quot;frag55533&quot; &quot;Ddx17&quot;   
+#&gt; [6,] &quot;frag8671&quot;  &quot;Slamf1&quot;
 #sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m</code></pre>
+input_m=wg_data_l$input_m; head(input_m)
+#&gt;            profile
+#&gt; Gnai3 790.65780000
+#&gt; Pbsn    0.00374016
+#&gt; Cdc45 382.84260000
+#&gt; H19   194.58420000
+#&gt; Scml2   7.21816400
+#&gt; Apoh    0.05962591</code></pre>
 </div>
 <div id="data-for-the-classification-step" class="section level1">
 <h1>Data for the classification step</h1>

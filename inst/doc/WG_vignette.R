@@ -32,12 +32,12 @@ n_cores=5
 
 #Load and set up the example data ----
 data("wg_data_l")
-#gene - fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net
-#gene-fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net
+#fragment-fragment interaction network generated from mESC_DNase_Net interactions data
+ff_net=wg_data_l$ff_net; head(ff_net)
+#gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
+gf_net=wg_data_l$gf_net; head(gf_net)
 #sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m
+input_m=wg_data_l$input_m; head(input_m)
 
 ## ----GUI data-----------------------------------------------------------------
 #gene annotation

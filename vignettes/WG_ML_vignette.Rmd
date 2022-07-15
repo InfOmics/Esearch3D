@@ -52,19 +52,24 @@ n_cores=5
 ```
 
 # Data set up
-For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected by edges to the fragments situated on the gene.
+For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected to the fragments which map to the gene.
+The required data are:
+* fragment-fragment interaction matrix (`ff_net`)
+* gene-fragment interaction matrix (`gf_net`)
+* gene expression matrix (`input_m`)
 
-```{r loading of wg}
 
+```{r loading of wg dataset}
 #Load and set up the example data ----
 data("wg_data_l")
-#gene - fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net
-#gene-fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net
+#fragment-fragment interaction network generated from mESC_DNase_Net interactions data
+ff_net=wg_data_l$ff_net; head(ff_net)
+#gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
+gf_net=wg_data_l$gf_net; head(gf_net)
 #sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m
+input_m=wg_data_l$input_m; head(input_m)
 ```
+
 
 # Data for the classification step
 The operation of enhancers classification requires a dataframe of metainformation related to the chromatin fragments.
