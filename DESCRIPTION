@@ -10,8 +10,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-Depends: R (>= 3.6.1),biomaRt (>= 2.0.0),plyr (>= 1.8.6),dplyr
-        (>= 1.0.0),DT,fields (>= 11.0),spam (>= 2.5),plotfunctions (>=
+Depends: R (>= 3.6.1),biomaRt (>= 2.0.0),plyr (>= 1.8.6),dplyr (>=
+        1.0.0),DT,fields (>= 11.0),spam (>= 2.5),plotfunctions (>=
         1.0),visNetwork (>= 2.0.0),shinyjs (>=
         2.0.0),shinydashboard,shiny (>= 1.4.0),cppRouting (>=
         2.0),igraph (>= 1.0),doParallel (>= 1.0),iterators (>=
@@ -23,8 +23,8 @@ Depends: R (>= 3.6.1),biomaRt (>= 2.0.0),plyr (>= 1.8.6),dplyr
         1.14.0),plotfunctions (>= 1.0),rmarkdown,knitr,htmltools (>=
         0.5.2),BiocManager,bslib,future (>= 1.0.0),mlr3verse (>=
         0.2),mlr3tuning (>= 0.8),mlr3learners (>= 0.4),mlr3viz (>=
-        0.5),DALEX (>= 2.0),DALEXtra (>= 2.0), rlang (>= 1.0.0)
+        0.5),DALEX (>= 2.0),DALEXtra (>= 2.0), rlang (>= 1.0.0), ranger
 biocViews: IRanges (>= 2.20.0),biomaRt (>= 2.0.0)
 RoxygenNote: 7.2.0
 NeedsCompilation: no
-Packaged: 2022-07-12 18:03:55 UTC; lg
+Packaged: 2022-07-15 12:11:34 UTC; root

@@ -41,7 +41,7 @@ devtools::install_github(
 There are the following vignettes:
 
 1. [Vignette with WG data ](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_vignette.html)
-2. [Vignette with WG bait data and other end data and Machine Learning](TBD)
+2. [Vignette with WG data and Machine Learning](TBD)
  
 
 ## Representation of chromatin data
@@ -105,25 +105,7 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=2, r=0.8)
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
 
 #Start GUI
-start_GUI(net, ann_net_b, chr_len)
-
-#Single gene propagation -----
-(TO BE CHANGED?)
-degree = 3
-frag_pattern = "F"
-gene_in=c("G1")
-
-contrXgene_l=rwr_SGprop(gf_net, ff_net, gene_in, frag_pattern,
-                        degree = degree, r1 = 0.1, r2 = 0.8, no_cores = 2)
-
-#Create igraph object with all the information included
-sff_prop=as.matrix(contrXgene_l$G1$contr_lxDest$ff_prop[,gene_in])
-colnames(sff_prop)=gene_in
-#Create igraph object with all the information included
-net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
-
-#Start GUI
-start_GUI(net, ann_net_b, chr_len)
+start_GUI(net, ann_net_b)
 ```
 
 ### GUI

@@ -56,7 +56,7 @@ For this vignette, we created a DNaseI-capture HiC derived network, whereby capt
 ```{r loading of wg dataset}
 
 #Load and set up the example data ----
-data("wg_data_l")
+#data("wg_data_l")
 #gene - fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
 gf_net=wg_data_l$gf_net
 #gene-fragment-fragment interaction network generated from mESC_DNase_Net interactions data
