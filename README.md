@@ -109,25 +109,18 @@ start_GUI(net, ann_net_b)
 ```
 
 ### GUI
+The GUI allows to explore a sample's profile after a network-based propagation. The user can investigate the imputed activity scores obtained by specific genes and their neighborhood. The visualized network can be downloaded and further analysed in Cytoscape.
 
-1. It allows to explore a sample's profile after a network-based propagation
-2. It allows to investigate the imputed activity scores obtained by specific genes and their neighborhood
-3. It allows to download the propagated network and to import it in Cytoscape
-
-### Legend
 (IMAGE TO BE CHANGED)
 <img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_overall.png" />
 
-  1. Select or type node + Distance: allows to visualize the neighbourhood of one specific node of interest
-  2. Select by propagation ranges: allows to filter the subnetwork generated with a "search". It allows to keep only the nodes with a value that falls inside a specific range
-  3. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
-  4. Download GML file: allows to download the network and its features as a GML file that can be opened in Cytoscape. 
-  8. Download html file: allows to download the image of the network visualized and created with the GUI
+  1. Type a node + Distance from a selected node: allows to visualize the neighbourhood of one specific node of interest
+  2. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
+  3. Select by propagation ranges: it shows only the nodes with a value that falls inside a specific range
+  4. Download html file: allows to download the network as an html file the network created with the GUI
+  5. Download GML file: allows to download the network and its features as a GML file that can be opened in Cytoscape. 
 
-### Plots
-(TO BE CHANGED)
-
-Following plot shows you an example of how to interact with the GUI and its functionalities
+The following image shows you an example of how to interact with the GUI and its functionalities
 
 <img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_scene.gif" />
 
