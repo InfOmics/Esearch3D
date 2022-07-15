@@ -90,7 +90,7 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
 ```
 
 # Network visualization
-Using the obtained propagation scores, we can create the final network and visualize it using a graphic interface. Remember that these functions require annotation.
+The obtained propagation scores, which are stored in ff_prop and gd_prop, can be used to create the final network and visualize it using a graphic interface. Remember that these functions require annotation.
 ```{r network visualization}
 #Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
@@ -98,13 +98,3 @@ net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,
 #Start GUI
 start_GUI(net, ann_net_b)
 ```
- 
-
-
-
-
-
-
-
-
-
