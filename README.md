@@ -1,6 +1,6 @@
 # Esearch3D: predictor of enhancer activity <img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/logo.png" width=250 align="right" style="border:4px solid black;" />
 
-Signals pertaining to transcriptional activation are transferred from enhancers found in intergenic loci to genes in the form of transcription factors, cofactors, and various transcriptional machineries such as RNA Pol II. How and where this information is transmitted to and from is central for decoding the regulatory landscape of any gene and identifying enhancers. Esearch3D is an unsupervised algorithm to predict enhancers. It reverses engineering the flow of information and identifies intergenic regulatory enhancers using solely gene expression and 3D genomic data. It models chromosome conformation capture (3C) data as chromatin interaction network (CIN) and then exploits graph-theory algorithms to integrate RNA-seq data to calculate an imputed activity score (IAS) for intergenic regions.  We also provide a visualisation tool to allow an easy interpretation of the results.
+Signals pertaining to transcriptional activation are transferred from enhancers found in intergenic loci to genes in the form of transcription factors, cofactors, and various transcriptional machineries such as RNA Pol II. How and where this information is transmitted to and from is central for decoding the regulatory landscape of any gene and identifying enhancers. Esearch3D is an unsupervised algorithm to predict enhancers. It reverse engineers the flow of information and identifies intergenic regulatory enhancers using solely gene expression and 3D genomic data. It models chromosome conformation capture (3C) data as chromatin interaction network (CIN) and then exploits graph-theory algorithms to integrate RNA-seq data to calculate an imputed activity score (IAS) for intergenic regions.  We also provide a visualisation tool to allow an easy interpretation of the results.
 
 [![R-CMD-check](https://github.com/jokergoo/cola/workflows/R-CMD-check/badge.svg)](https://github.com/jokergoo/cola/actions)
 
@@ -40,8 +40,8 @@ devtools::install_github(
 
 There are the following vignettes:
 
-1. [Vignette with WG data ](http://htmlpreview.github.io/?https://github.com/LucaGiudice/supplementary-files/blob/main/D3SearchE_images/WG_vignette.html)
-2. [Vignette with WG data and Machine Learning](TBD)
+1. [Vignette for IAS score computation on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/WG_vignette.html)
+2. [Vignette for IAS score computation and enhancer classification on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/WG_ML_vignette.html)
  
 
 ## Representation of chromatin data
@@ -77,7 +77,7 @@ Multi-gene propagation highlights I6, an enhancer labelled node, with a higher I
 
 ### Usage
 
-Few lines of code to run *D3SearchE* prediction:
+Few lines of code to run *ESearch3D* prediction:
 
 ```r
 library(Esearch3D)
@@ -115,17 +115,14 @@ start_GUI(net, ann_net_b)
 3. It allows to download the propagated network and to import it in Cytoscape
 
 ### Legend
-(TO BE CHANGED)
+(IMAGE TO BE CHANGED)
 <img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_overall.png" />
 
-  1. Select nodes by chromosomes: allows to filter the network and to keep only those nodes (e.g. genes) that belong to a specific chromosome
-  2. Select nodes by genome region: allows to filter the network and to keep only those nodes that belong to a specific genome region
-  3. Select or type node + Distance: allows to visualize the neighbourhood of one specific node of interest
-  4. Select by propagation ranges: allows to filter the subnetwork generated with a "search". It allows to keep only the nodes with a value that falls inside a specific range
-  5. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
-  6. More/Less: allow to increase or decrease the size of the neighbourhood around a node of interest based on the distance (e.g. first degree neighbourhood, second degree ...)
-  7. Open in cytoscape: allows to open the network in cytoscape
-  8. Download: allows to download the image of the network visualized and created with the GUI
+  1. Select or type node + Distance: allows to visualize the neighbourhood of one specific node of interest
+  2. Select by propagation ranges: allows to filter the subnetwork generated with a "search". It allows to keep only the nodes with a value that falls inside a specific range
+  3. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
+  4. Download GML file: allows to download the network and its features as a GML file that can be opened in Cytoscape. 
+  8. Download html file: allows to download the image of the network visualized and created with the GUI
 
 ### Plots
 (TO BE CHANGED)
