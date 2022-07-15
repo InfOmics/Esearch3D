@@ -248,7 +248,8 @@ ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
 </div>
 <div id="network-visualization" class="section level1">
 <h1>Network visualization</h1>
-<p>Using the obtained propagation scores, we can create the final network and visualize it using a graphic interface. Remember that these functions require annotation.</p>
+<p>
+The obtained propagation scores, which are stored in ff_prop and gd_prop, can be used to create the final network and visualize it using a graphic interface. Remember that these functions require annotation.</p>
 <pre class="r"><code>#Create igraph object with all the information included
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern=&quot;frag&quot;,ff_net,ff_prop)
 
@@ -256,10 +257,6 @@ net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern=&quot;frag&quo
 start_GUI(net, ann_net_b)</code></pre>
 <div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
 </div>
-
-
-
-
 </div>
 
 <script>
