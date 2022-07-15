@@ -102,7 +102,7 @@ gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=2, r=0.1)
 ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=2, r=0.8)
 
 #Create igraph object with all the information included
-net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="F",ff_net,ff_prop)
+net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
 
 #Start GUI
 start_GUI(net, ann_net_b)
