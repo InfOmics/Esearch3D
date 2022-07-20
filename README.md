@@ -15,9 +15,10 @@ Signals pertaining to transcriptional activation are transferred from enhancers 
 
 ## Citation
 
-Manindeer *, Giudice * et al. Esearch3D: Propagating gene expression in chromatin networks to illuminate active enhancers
+Maninder Heer*, Luca Giudice*, Claudia Mengoni, Rosalba Giugno^, and Daniel Rico^. Esearch3D: Propagating gene expression in chromatin networks to illuminate active enhancers
 
 *equally contributed
+^co-senior authors
 
 ## Install
 
@@ -65,15 +66,6 @@ Schematic diagram of the network propagation used to impute activity values at i
 - A. Genes are mapped to nodes representing genic chromatin fragments. Each gene has an associated gene activity value determined by RNA-seq data. 
 - B. Gene activity is propagated from gene nodes to genic chromatin nodes in propagation step one. Activity scores are then imputed in intergenic chromatin nodes by propagating the scores from genic chromatin nodes. 
 - C. Ranking of non-genic nodes by the imputed activity score to identify high confidence enhancer nodes.
-
-## Difference between two step propagation (aka multi gene propagation) and single gene propagation
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/single.png" width=650 />
-</p>
-
-A schematic of how multi-gene and single-gene propagation differ in the relative imputed activity scores. 
-Multi-gene propagation highlights I6, an enhancer labelled node, with a higher IAS than single-gene propagation. 
 
 ### Usage
 
@@ -124,6 +116,3 @@ The following image shows you an example of how to interact with the GUI and its
 
 <img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_scene.gif" />
 
-## License
-
-MIT @ Giudice Luca
