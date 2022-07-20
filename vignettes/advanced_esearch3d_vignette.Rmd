@@ -5,7 +5,7 @@ output:
     theme: united
     toc: yes
 vignette: |
-  %\VignetteIndexEntry{WG_ML_bait_vignette} 
+  %\VignetteIndexEntry{advanced_esearch3d_vignette} 
   %\VignetteEngine{knitr::rmarkdown} 
   %\VignetteEncoding{UTF-8}
 ---
