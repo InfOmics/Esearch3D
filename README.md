@@ -115,5 +115,5 @@ The GUI allows to explore a sample's profile after a network-based propagation. 
 
 The following image shows you an example of how to interact with the GUI and its functionalities
 
-<img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_scene.gif" />
+<img src="https://github.com/Cengoni/supp-Esearch3D/blob/main/GUI_demontration.gif" />
 
