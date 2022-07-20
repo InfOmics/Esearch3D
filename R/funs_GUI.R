@@ -411,7 +411,7 @@ start_GUI = function(net1, ann_net_b){
       }
     }, ignoreInit = TRUE)
 
-    observeEvent(input$dist, {  if (input$node != ""){react()}})
+    observeEvent(input$dist, {if (input$node != "" & !is.na(input$dist)){react()}})
 
 
     #visualization of the visNetowrk

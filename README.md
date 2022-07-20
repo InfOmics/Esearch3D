@@ -102,9 +102,8 @@ start_GUI(net, ann_net_b)
 
 ### GUI
 The GUI allows to explore a sample's profile after a network-based propagation. The user can investigate the imputed activity scores obtained by specific genes and their neighborhood. The visualized network can be downloaded and further analysed in Cytoscape.
-
-(IMAGE TO BE CHANGED)
-<img src="https://github.com/LucaGiudice/supplementary-Simpati/blob/main/images/gui_overall.png" />
+ 
+<img src="https://github.com/Cengoni/supp-Esearch3D/blob/main/Myc_network.png" />
 
   1. Type a node + Distance from a selected node: allows to visualize the neighbourhood of one specific node of interest
   2. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
