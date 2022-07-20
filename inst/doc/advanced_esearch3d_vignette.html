@@ -196,8 +196,8 @@ pre code {
 rm(list=ls())
 gc()
 #&gt;           used (Mb) gc trigger (Mb) max used (Mb)
-#&gt; Ncells  558290 29.9    1276182 68.2   637862 34.1
-#&gt; Vcells 1059496  8.1    8388608 64.0  1744670 13.4
+#&gt; Ncells  558296 29.9    1276200 68.2   637862 34.1
+#&gt; Vcells 1059612  8.1    8388608 64.0  1744670 13.4
 
 #Set working directory ----
 gps0=getwd()
@@ -219,15 +219,7 @@ n_cores=5</code></pre>
 </div>
 <div id="data-set-up" class="section level1">
 <h1>Data set up</h1>
-<p>For this vignette, we created a DNaseI-capture HiC derived network,
-whereby captured regions are DNaseI sensible regions from mouse
-embryonic stem cells (mESC). A chromatin fragment is represented as a
-node; a fragment-fragment interaction as an edge. We then integrated
-genes as nodes within the network. In this case, genes are connected to
-the fragments which map to the gene. The required data are: *
-fragment-fragment interaction matrix (<code>ff_net</code>) *
-gene-fragment interaction matrix (<code>gf_net</code>) * gene expression
-matrix (<code>input_m</code>)</p>
+<p>For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected to the fragments which map to the gene. The required data are: * fragment-fragment interaction matrix (<code>ff_net</code>) * gene-fragment interaction matrix (<code>gf_net</code>) * gene expression matrix (<code>input_m</code>)</p>
 <pre class="r"><code>#Load and set up the example data ----
 data(&quot;wg_data_l&quot;)
 #fragment-fragment interaction network generated from mESC_DNase_Net interactions data
@@ -341,14 +333,14 @@ gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores,
                    stop_step = res_tuning$best_comb$stop_iters)
 #&gt; **Performing two step propagation 
 #&gt; Parallel for linux 
-#&gt; running time: 0.1164 mins
+#&gt; running time: 0.1196 mins
 #Propagated for the network fragment-fragment
 ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, 
                    r=res_tuning$best_comb$r2,
                    stop_step = res_tuning$best_comb$stop_iters)
 #&gt; **Performing two step propagation 
 #&gt; Parallel for linux 
-#&gt; running time: 0.2103 mins</code></pre>
+#&gt; running time: 0.2132 mins</code></pre>
 </div>
 <div id="enhancer-classification" class="section level1">
 <h1>Enhancer classification</h1>

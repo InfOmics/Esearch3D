@@ -5,7 +5,6 @@ knitr::opts_chunk$set(
 )
 
 ## ----setup--------------------------------------------------------------------
-
 #Clean workspace and memory ----
 rm(list=ls())
 gc()
@@ -29,7 +28,6 @@ set.seed(8)
 n_cores=5
 
 ## ----loading of wg dataset----------------------------------------------------
-
 #Load and set up the example data ----
 data("wg_data_l")
 #fragment-fragment interaction network generated from mESC_DNase_Net interactions data
@@ -41,16 +39,14 @@ input_m=wg_data_l$input_m; head(input_m)
 
 ## ----GUI data-----------------------------------------------------------------
 #gene annotation
-ann_net_b=wg_data_l$ann_net_b
+ann_net_b=wg_data_l$ann_net_b; head(ann_net_b)
 
 ## ----two step propagation with random walk with restart-----------------------
-
 #Two step propagation -----
 #Propagated for the network gene-fragment
 gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, r=0.1)
 #Propagated for the network fragment-fragment
 ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
-
 
 ## ----network visualization----------------------------------------------------
 #Create igraph object with all the information included
