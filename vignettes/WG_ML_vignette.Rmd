@@ -1,5 +1,5 @@
 ---
-title: "WG_ML_vignette"
+title: "Advanced Esearch3D vignette"
 output:
   html_document:
     theme: united
