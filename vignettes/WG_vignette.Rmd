@@ -1,5 +1,5 @@
 ---
-title: "WG_vignette"
+title: "Esearch3D vignette"
 output:
   html_document:
     theme: united
@@ -98,5 +98,5 @@ The obtained propagation scores, which are stored in ff_prop and gd_prop, can be
 net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
 
 #Start GUI
-#start_GUI(net, ann_net_b) #uncomment and run to start the GUI
+start_GUI(net, ann_net_b)
 ```
