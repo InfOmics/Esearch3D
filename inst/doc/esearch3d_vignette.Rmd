@@ -1,11 +1,11 @@
 ---
-title: "WG_vignette"
+title: "Esearch3D vignette"
 output:
   html_document:
     theme: united
     toc: yes
 vignette: |
-  %\VignetteIndexEntry{WG_vignette} 
+  %\VignetteIndexEntry{esearch3d_vignette} 
   %\VignetteEngine{knitr::rmarkdown} 
   %\VignetteEncoding{UTF-8}
 ---
