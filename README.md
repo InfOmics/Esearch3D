@@ -20,6 +20,8 @@ Maninder Heer*, Luca Giudice*, Claudia Mengoni, Rosalba Giugno^, and Daniel Rico
 *equally contributed
 ^co-senior authors
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [](#lang-en)
+
 ## Install
 
 *Esearch3D* is available on R, you can install it by:
