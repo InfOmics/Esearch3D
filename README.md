@@ -43,8 +43,8 @@ devtools::install_github(
 
 There are the following vignettes:
 
-1. [Vignette for IAS score computation on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/WG_vignette.html)
-2. [Vignette for IAS score computation and enhancer classification on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/WG_ML_vignette.html)
+1. [Vignette for IAS score computation on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/esearch3d_vignette.html)
+2. [Vignette for IAS score computation and enhancer classification on mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset](http://htmlpreview.github.io/?https://github.com/Cengoni/Esearch3D/blob/main/inst/doc/advanced_esearch3d_vignette.html)
  
 
 ## Representation of chromatin data
