@@ -30,7 +30,7 @@ Maninder Heer*, Luca Giudice*, Claudia Mengoni, Rosalba Giugno^, and Daniel Rico
 install.packages("devtools")
 install.packages("htmltools", version="0.5.2", type="source")
 devtools::install_github(
-  repo="Cengoni/Esearch3D", #  to be changed to repo="InfOmics/Esearch3D",
+  repo="InfOmics/Esearch3D",
   ref = "main",
   dependencies = "Depends",
   upgrade = "always",
