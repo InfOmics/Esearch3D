@@ -4,16 +4,12 @@
 \alias{start_GUI}
 \title{Starts a shiny gui for the visualization of propagation results}
 \usage{
-start_GUI(net1, ann_net_b, chr_len, example = FALSE)
+start_GUI(net1, ann_net_b)
 }
 \arguments{
 \item{net1}{igraph object to visualize}
 
 \item{ann_net_b}{dataframe, specifies the genes positions (chromosome, start and end position)}
-
-\item{chr_len}{dataframe, specifies the chromosomes (first column) and their length  (second column)}
-
-\item{example}{boolean, show 5 genes to select as an example}
 }
 \description{
 Given the graph obtained with create_net2plot function, the annotation of the genes included in the graph with

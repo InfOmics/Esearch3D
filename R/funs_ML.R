@@ -13,7 +13,7 @@ range01 <- function(x){(
 #'
 #' This function performs Maximum-based ranking normalization on a number vector
 #'
-#' @param x numeric vector
+#' @param v numeric vector
 #' @return Normalized vector based on max rank
 #'
 rank_scale=function(v){
