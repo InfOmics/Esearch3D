@@ -3,9 +3,9 @@ Type: Package
 Title: Leveraging gene expression and chromatin architecture to predict
         intergenic enhancers
 Version: 0.4.0
-Author: Manindeer *, Giudice * et al. 
-Maintainer: Claudia Mengoni <claudia.mengoni@univr.it>
-Description: Software that leverages gene expression and chromatin architecture to predict intergenic enhancers and includes a graphic user interface to allow the interaction with single cell propagated profiles
+Author: Maninder Heer *, Luca Giudice * et al. 
+Maintainer: Maninder Heer <maninder-heer@hotmail.co.uk> Claudia Mengoni <claudia.mengoni@univr.it>
+Description: Software that leverages gene expression and 3C data to predict intergenic enhancers and includes a graphic user interface to visualisation of the network with imputed activity scores
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
