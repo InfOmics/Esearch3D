@@ -18,25 +18,25 @@ knitr::opts_chunk$set(
 ```
 
 # Esearch3D advanced with classification
-This vignette replicates the machine learning analysis on the mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset presented in the publication. It shows how the IAS score, in combination with centrality measures can classify intergenic enhancers. Informative plots about the contribution of each feature to classification are created in the end, showing the importance of the IAS score for classifying enhancers. 
-We present the whole procedure to compute the IAS score and then the more advanced operation to build the classifier. Building the classifier requires at least 32 GB of RAM and can take up some time, make sure to use a multicore machine and increase the number of cores you provide the function (n_cores). 
+This vignette replicates the machine learning analysis on the mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset presented in the publication. It shows how the IAS score, in combination with centrality measures can be used to classify intergenic enhancers. Informative plots about the contribution of each feature to the classification are created at the end, showing the importance of the IAS score for classifying enhancers. 
+Here, we demonstrate the procedure to compute the IAS score and build the classifier. Building the classifier requires at least 32 GB of RAM and can take  some time to run. For increased performance be sure to use a multicore machine and increase the number of cores you provide the function with n_cores. 
  
 
 # Enviroment set up
-Let us clean the R environment, set the working directory, load the software package, set the random seed generator for reproducing always the same results and define the number of cores available in the computer to run the operations.
-Be careful: set up the number of cores based on your resources. If you are not sure, then just set it to 2
+Here, we will clean the R environment, set the working directory, load the software package, set the random seed generator for reproducibility and define the number of cores available in the computer to run the operations.
+Caution: set up the number of cores based on your resources. If you are not sure, then just set it to 2
 
 ```{r setup}
 
 #Clean workspace and memory ----
-rm(list=ls())
+rm(list = ls())
 gc()
 
 #Set working directory ----
-gps0=getwd()
-gps0=paste(gps0,"/%s",sep="")
-rootDir=gps0
-setwd(gsub("%s","",rootDir))
+gps0 = getwd()
+gps0 = paste(gps0, "/%s", sep="")
+rootDir = gps0
+setwd(gsub("%s", "", rootDir))
 
 #Load libraries ----
 suppressWarnings(suppressMessages(
@@ -45,14 +45,14 @@ suppressWarnings(suppressMessages(
 )
 
 #Set variables ----
-#Set seed to get always the same results out of this vignette
+#Set seed to reproduce the same results from this vignette
 set.seed(8)
-#Set number of cores to parallelize the tasks
+#Set number of cores to parallelise the tasks
 n_cores=5
 ```
 
 # Data set up
-For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected to the fragments which map to the gene.
+For this vignette, we created a DNaseI-capture Hi-C derived network. The captured fragments represent DNaseI sensible regions from mouse embryonic stem cells (mESC). To analyse their interactions the chromatin fragments are represented as nodes (V) where a fragment-fragment interaction is represented as an edge (E) to create a network (G) such that G=(V,E). We then integrated genes as additional nodes within the network. In this case, genes are connected to the fragments where the gene and fragment coordinates overlap by at least 1 base pair, these nodes are designated as genic nodes. Fragments that do not overlap with genes are designated intergenic nodes.
 The required data are:
 * fragment-fragment interaction matrix (`ff_net`)
 * gene-fragment interaction matrix (`gf_net`)
@@ -63,62 +63,62 @@ The required data are:
 #Load and set up the example data ----
 data("wg_data_l")
 #fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net; head(ff_net)
+ff_net = wg_data_l$ff_net; head(ff_net)
 #gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net; head(gf_net)
+gf_net = wg_data_l$gf_net; head(gf_net)
 #sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m; head(input_m)
+input_m = wg_data_l$input_m; head(input_m)
 ```
 
 
 # Data for the classification step
-The operation of enhancers classification requires a dataframe of metainformation related to the chromatin fragments.
-Specifically, a dataframe such that for each chromatin fragment there is a number of enhancer annotations associated to it.
+The classification step requires a dataframe containing metadata related to the chromatin fragments.
+Here, the metadata corresponds to the number of unique enhancer features that map to the fragment. As shown in the publication we used 5 distinct annotations for the mESC network.
 It does not require all fragments to be annotated.
 
-For capture Hi-C there is a bias between baits (such as promoters or, in this case, DHS sites) and other ends due to the enrichment protocol. 
-In this vignette we use baits nodes but equivalently you may want to test other ends nodes (info[info$Type!="Bait",])
+For capture Hi-C there is also bias that exists between baits (such as promoters or, in this case, DHS sites) and other ends due to the enrichment protocol. 
+In this vignette we use baits nodes but you may also want to run the same analysis for the nodes that represent the non-enriched fragments (other-ends) (info[info$Type!="Bait",])
 
 ```{r loading related enhancer annotation data}
 
-#info dataframe containg for each node and fragment the number of enhancer annotations associated to it
-info=wg_data_l$info
-info=info[info$Type=="Bait",]
+#An info dataframe containg the number of enhancer annotations for each node
+info = wg_data_l$info
+info = info[info$Type == "Bait",]
 info=info[,-3]
 head(info)
-#dataframe containg mmu nomenclature about genes
-mouse_db=wg_data_l$mouse_db;head(mouse_db);
+#A dataframe containg mmu nomenclature for genes
+mouse_db = wg_data_l$mouse_db; head(mouse_db);
 ```
 
 # Centrality measures
 
-Esearch3D determines the centrality measures of the genes and fragments included in the network that have a prior information about being or not being enhancer. Centrality measure define how much each node in the network is important and where it is placed For example, high eigencentrality means that the fragment is crucial for the connectivity, central to the network and not a leaf node.
+Esearch3D determines the centrality measures for all nodes in the network that are annotated as enhancers. Centrality measures define the importance of a node based on its connectivity. For example, eigencentrality recursively calculates the importance of a node based on its connections to other important nodes in the network.
 
 ```{r calculation of centrality measures}
-#Process info matrix to get fragments extra information ----
-info=get_centr_info(gf_net,ff_net,info);head(info)
+#Process the info matrix to get the node metadata ----
+info = get_centr_info(gf_net, ff_net, info); head(info)
 
 ```
 
 # Nomenclature change
 
 Esearch3D includes a database of the gene names related to the mmu species.
-It allows to convert ENS genes to Symbols.
+Here we will convert ENSG genes to Symbols.
 
 ```{r nomenclature change}
 
 #Convert ENSG to SYMB ----
-gf_net[,1]=mapvalues(gf_net[,1],from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F)
-gf_net[,2]=mapvalues(gf_net[,2],from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F)
-ens_row=rownames(input_m);sym_row=mapvalues(ens_row,from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F);rownames(input_m)=sym_row
+gf_net[,1] = mapvalues(gf_net[,1], from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F)
+gf_net[,2]= mapvalues(gf_net[,2], from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F)
+ens_row= rownames(input_m); sym_row = mapvalues(ens_row,from = mouse_db$ENS, to = mouse_db$Symbol, warn_missing = F);rownames(input_m) = sym_row
 
 ```
 
 # Tuned multi-gene two-step propagation
-In the first propagation, the gene expression is propagated from their nodes into their directly connected genic fragments. 
-In the second propagation, the gene expression is then propagated to the rest of the network
+During the first propagation, the gene expression is propagated from gene nodes (that represent the genes) into the genic nodes (that represent the fragments) that they map to. 
+In the second propagation, the gene expression is then propagated to the intergenic nodes to receive an imputed activity score (IAS) that reflects the probability of enhancer activity.
 
-When Esearch3D has available metainformation about which nodes  are enhancers, it can find the values of the isolation parameter r which optimize the flow of the information from the genes to the enhancers.
+When metadata corresponding to whether a node represents and enhancer or not, Esearch3D can learn the isolation parameter r which optimises IAS at known enhancer nodes. As we have shown that IAS is highly enriched at enhancer nodes, unlabled nodes with high IAS are also likely to contain enahncers.
 
 Be careful: `r` is the isolation parameter, which reflects the percentage of information that is kept in the source nodes when propagating. In the first step we want the maximum amount of information to be propagated, so we use a low value. In the second step we can use higher values.
 The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
@@ -127,46 +127,46 @@ The genic and intergenic fragments receive an imputed activity score (IAS) refle
 ```{r two step propagation with automatic tuning of the isolation parameter}
 
 #Tuning of propagation setting -----
-res_tuning=tuning_prop_vars(gf_net,ff_net,input_m,n_cores=n_cores);head(res_tuning)
+res_tuning = tuning_prop_vars(gf_net, ff_net, input_m, n_cores=n_cores); head(res_tuning)
 
 #Two step propagation -----
-#Propagated for the network gene-fragment
-gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, 
-                   r=res_tuning$best_comb$r1,
+#First step
+gf_prop = rwr_OVprop(g = gf_net, input_m = input_m, no_cores = n_cores, 
+                   r = res_tuning$best_comb$r1,
                    stop_step = res_tuning$best_comb$stop_iters)
-#Propagated for the network fragment-fragment
-ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, 
-                   r=res_tuning$best_comb$r2,
+#Second step
+ff_prop = rwr_OVprop(g=ff_net, input_m = gf_prop, no_cores = n_cores, 
+                   r = res_tuning$best_comb$r2,
                    stop_step = res_tuning$best_comb$stop_iters)
 
 ```
 
 # Enhancer classification
 
-Esearch3D merges the propagation results with the metainformation about the nodes. Then it creates a random forest classifier to understand which centrality measures are predictive of intergenic enhancer and intergenic non-enhancer nodes. 
+Esearch3D merges the propagation results with the metadata for the nodes. It then creates a random forest classifier to predict the enhancer nodes. 
 
 ```{r enhancer classification, results = "hide" }
 
-#Merge propagation results with meta information about enhancer annotations
-info=merge_prop_info(ff_prop,info)
+#Merge propagation results with the enhancer metadata 
+info = merge_prop_info(ff_prop, info)
 
-#Build enhancer classifier
-res_ml=enhancer_classifier(info, n_cores=n_cores)
+#Build the enhancer classifier
+res_ml = enhancer_classifier(info, n_cores = n_cores)
 ```
 
 # Model explainer
 
-Esearch3D explains the best classifier to understand how well the classifier predicted and which metainformation has been more predictive of the enhancer activity.
+The classifier can then also be used to understand which centrality measures along with IAS are predictive of intergenic enhancer and intergenic non-enhancer nodes.
 
 * lrn_dalex is the dalex object containing the learner
 * fi_ranger is the dalex object containing the trained and tested classifier
-* fi_ranger_df is the dataframe indicating how much each node's feature contributed in the classification
-* bd_ranger_enh is the dalex object containing the classification of an enhancer
-* bd_ranger_no is the dalex object containing the classification of a non enhancer
+* fi_ranger_df is the dataframe indicating how much each node's feature contributed to the classification performance
+* bd_ranger_enh is the dalex object containing the classification of an enhancer node
+* bd_ranger_no is the dalex object containing the classification of a non enhancer node
 
 ```{r model explainer }
 #Build explainer
-res_dalex=explain_classifier(res_ml, n_cores=n_cores)
+res_dalex = explain_classifier(res_ml, n_cores = n_cores)
 
 #Plot results
 res_dalex$fi_ranger_df
