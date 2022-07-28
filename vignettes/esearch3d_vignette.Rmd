@@ -18,23 +18,23 @@ knitr::opts_chunk$set(
 ```
 
 # Esearch3D  
-This vignette introduces how to use Esearch3D for the prediction of the activity of intergenic fragments. 
-It goes through all the main operations of the software showing a real application of the tool. Precisely, this vignette replicates the analysis of the mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset presented in the publication.  
+This vignette introduces the usage of Esearch3D for the prediction of enhancers located in intergenic 3C fragments. 
+It covers all of the main operations of the software including a real use case of the tool. The use case presented in this vignette replicates the analysis of the mouse embryonic stem cells (mESCs) DNaseI capture Hi-C dataset presented in the associated publication.  
 
 # Enviroment set up
-Let us clean the R environment, set the working directory, load the software package, set the random seed generator for reproducing always the same results and define the number of cores available in the computer to run the operations.
+Here we will clean the R environment, set the working directory, load the software package, set the random seed generator for reproducibility and define the number of cores available in the computer to run the operations.
 Be careful: set up the number of cores based on your resources. If you are not sure, then just set it to 2
 
 ```{r setup}
 #Clean workspace and memory ----
-rm(list=ls())
+rm(list = ls())
 gc()
 
 #Set working directory ----
-gps0=getwd()
-gps0=paste(gps0,"/%s",sep="")
-rootDir=gps0
-setwd(gsub("%s","",rootDir))
+gps0 = getwd()
+gps0 = paste(gps0, "/%s", sep="")
+rootDir = gps0
+setwd(gsub("%s", "", rootDir))
 
 #Load libraries ----
 suppressWarnings(suppressMessages(
@@ -43,14 +43,14 @@ suppressWarnings(suppressMessages(
 )
 
 #Set variables ----
-#Set seed to get always the same results out of this vignette
+#Set seed to reproduce the same results from this vignette
 set.seed(8)
-#Set number of cores to parallelize the tasks
-n_cores=5
+#Set number of cores to parallelise the tasks
+n_cores = 5
 ```
 
 # Data set up
-For this vignette, we created a DNaseI-capture HiC derived network, whereby captured regions are DNaseI sensible regions from mouse embryonic stem cells (mESC). A  chromatin fragment is represented as a node; a fragment-fragment interaction as an edge. We then integrated genes as nodes within the network. In this case, genes are connected to the fragments which map to the gene.
+For this vignette, we created a DNaseI-capture Hi-C derived network. The captured fragments represent DNaseI sensible regions from mouse embryonic stem cells (mESC). To analyse their interactions the chromatin fragments are represented as nodes (V) where a fragment-fragment interaction is represented as an edge (E) to create a network (G) such that G=(V,E). We then integrated genes as additional nodes within the network. In this case, genes are connected to the fragments where the gene and fragment coordinates overlap by at least 1 base pair, these nodes are designated as genic nodes. Fragments that do not overlap with genes are designated intergenic nodes.
 The required data are:
 * fragment-fragment interaction matrix (`ff_net`)
 * gene-fragment interaction matrix (`gf_net`)
@@ -60,42 +60,41 @@ The required data are:
 ```{r loading of wg dataset}
 #Load and set up the example data ----
 data("wg_data_l")
-#fragment-fragment interaction network generated from mESC_DNase_Net interactions data
-ff_net=wg_data_l$ff_net; head(ff_net)
-#gene-fragment interaction network generated from DNase_Prop1_mESC_TSS interactions data
-gf_net=wg_data_l$gf_net; head(gf_net)
-#sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
-input_m=wg_data_l$input_m; head(input_m)
+#A fragment-fragment interaction network generated from mESC_DNase_Net interactions data
+ff_net = wg_data_l$ff_net; head(ff_net)
+#A gene-fragment interaction network generated from DNase_Prop1_mESC_WG interactions data
+gf_net = wg_data_l$gf_net; head(gf_net)
+#A sample profile with starting values for genes and fragments generated from mESC_bin_matrix_Prop1
+input_m = wg_data_l$input_m; head(input_m)
 ```
 
-In order to use the GUI, it is necessary to also provide a data frame with genes and fragments annotation. It has to be a 4-column data frame where the first column is the gene or fragment ID, the second is the chromosome, and the last two are start and end position.
+In order to use the GUI, it is necessary to also provide a data frame with the genomic coordinates of the genes and fragments. It must be a 4-column data frame where the first column is the gene or fragment ID, the second is the chromosome, and the last two are start and end position.
 
 ```{r GUI data} 
-#gene annotation
-ann_net_b=wg_data_l$ann_net_b; head(ann_net_b)
+#Gene annotation
+ann_net_b = wg_data_l$ann_net_b; head(ann_net_b)
 ```
 
 # Multi-gene two-step propagation
-Having loaded the required data, we proceed with the main operation for computing enhancer actitivy, the multi-gene two-step propagation.
-In the first propagation, the gene expression is propagated from their nodes into their directly connected genic fragments. 
-In the second propagation, the gene expression is then propagated to the rest of the network.
+Having loaded the required data, we can then proceed with the multi-gene two-step propagation to predict the enhancer actitivy at intergenic nodes.
+During the first propagation, the gene expression is propagated from gene nodes (that represent the genes) into the genic nodes (that represent the fragments) that they map to. 
+In the second propagation, the gene expression is then propagated to the intergenic nodes to receive an imputed activity score (IAS) that reflects the probability of enhancer activity.
 
-Be careful: `r` is the isolation parameter, which reflects the percentage of information that is kept in the source nodes when propagating. In the first step we want the maximum amount of information to be propagated, so we use a low value. In the second step we can use higher values.
-The genic and intergenic fragments receive an imputed activity score (IAS) reflecting the likelihood of enhancer activity.
+Caution: `r` is the isolation parameter, which reflects the percentage of information that is kept in the source nodes when propagating. In the first step we want the maximum amount of information to be propagated, so we use a low value. In the second step we can use higher values depending.
 
 ```{r two step propagation with random walk with restart}
 #Two step propagation -----
-#Propagated for the network gene-fragment
-gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=n_cores, r=0.1)
-#Propagated for the network fragment-fragment
-ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=n_cores, r=0.8)
+#First step
+gf_prop = rwr_OVprop(g = gf_net, input_m = input_m, no_cores = n_cores, r = 0.1)
+#Second step
+ff_prop = rwr_OVprop(g = ff_net, input_m = gf_prop, no_cores = n_cores, r = 0.8)
 ```
 
 # Network visualization
-The obtained propagation scores, which are stored in ff_prop and gd_prop, can be used to create the final network and visualize it using a graphic interface. Remember that these functions require an annotation object to be provided. Additionally, the user has to specify in `frag_pattern` the string which allows to distinguish fragments IDs from genes.
+The obtained IAS, which is stored in ff_prop and gf_prop objects can be used to create the final network. This can then be visualised using our graphic interface (GUI). Remember that these functions require an annotation object to be provided. Additionally, the user must specify in `frag_pattern` the string to distinguish fragments IDs from genes.
 ```{r network visualization}
-#Create igraph object with all the information included
-net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
+#Create an igraph object with all the information included
+net=create_net2plot(gf_net, input_m, gf_prop, ann_net_b, frag_pattern = "frag", ff_net, ff_prop)
 
 #Start GUI
 start_GUI(net, ann_net_b)
