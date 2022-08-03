@@ -73,47 +73,64 @@ Schematic diagram of the network propagation used to impute activity values at i
 
 ### Usage
 
-Few lines of code to run *ESearch3D* prediction:
+It takes just a few lines of code to run *ESearch3D* with the sample data provided:
 
 ```r
 library(Esearch3D)
 
 #Load and set up the example data ----
 data("wg_data_l")
-#gene - fragment interaction network
-gf_net=wg_data_ll$gf_net
-#gene-fragment-fragment interaction network
-ff_net=wg_data_l$ff_net
-#sample profile with starting values for genes and fragments
-input_m=wg_data_l$input_m
-#length of chromosomes
-chr_len=wg_data_l$chr_len
-#gene annotation
+
+#1) A two column dataframe representing the gene - fragment interaction network
+gf_net = wg_data_ll$gf_net
+
+#2) A two column dataframe representing the fragment-fragment interaction network
+ff_net = wg_data_l$ff_net
+
+#3) A matrix containing the starting values of the nodes (gene node scores are given by the RNA-seq values while fragments have a starting value of 0)
+input_m = wg_data_l$input_m
+
+#4) A dataframe representing the length of chromosomes
+chr_len = wg_data_l$chr_len
+
+#5) A list of genes to annotate to the chromatin fragments
 ann_net_b=wg_data_l$ann_net_b
 
 #Two step propagation -----
 #Propagation over the gene-fragment network
-gf_prop=rwr_OVprop(g=gf_net,input_m = input_m, no_cores=2, r=0.1)
+gf_prop = rwr_OVprop(g=gf_net,
+                     input_m = input_m, 
+                     no_cores = 2, 
+                     r = 0.1)
 #Propagation over the gene-fragment-fragment network
-ff_prop=rwr_OVprop(g=ff_net,input_m = gf_prop, no_cores=2, r=0.8)
+ff_prop=rwr_OVprop(g=ff_net,
+                   input_m = gf_prop, 
+                   no_cores = 2, 
+                   r = 0.8)
 
-#Create igraph object with all the information included
-net=create_net2plot(gf_net,input_m,gf_prop,ann_net_b,frag_pattern="frag",ff_net,ff_prop)
+#Create an annotated igraph object
+net=create_net2plot(gf_net,
+                    input_m,
+                    gf_prop,
+                    ann_net_b,
+                    frag_pattern = "frag",
+                    ff_net,
+                    ff_prop)
 
-#Start GUI
+#Start the GUI
 start_GUI(net, ann_net_b)
 ```
 
 ### GUI
-The GUI allows to explore a sample's profile after a network-based propagation. The user can investigate the imputed activity scores obtained by specific genes and their neighborhood. The visualized network can be downloaded and further analysed in Cytoscape.
+The GUI allows the user to explore the network following the network-based propagation of gene expression from genic nodes to intergenic nodes. The user can investigate the imputed activity scores (IAS) and their 3D-genetic neighborhood. The visualised network can be downloaded and further analysed in Cytoscape.
  
 <img src="https://github.com/Cengoni/supp-Esearch3D/blob/main/Myc_network.png" />
 
-  1. Type a node + Distance from a selected node: allows to visualize the neighbourhood of one specific node of interest
-  2. Scale colours: allows to scale the colors of the visualized nodes as if the propagation would have been applied only on them
-  3. Select by propagation ranges: it shows only the nodes with a value that falls inside a specific range
-  4. Download html file: allows to download the network as an html file the network created with the GUI
-  5. Download GML file: allows to download the network and its features as a GML file that can be opened in Cytoscape. 
+  1. Select a node ID  and the desired distance from a selected node: Allows to visualise the neighbourhood of a node of interest
+  2. Scale colours: Allows the user to scale the colors of the visualised nodes to the selected neighbourhood
+  3. Select by propagation ranges: Only show the nodes with a value that falls between a specific range
+  4. Download html file: Allows the user to download the network as an html file the network created with the GUI
+  5. Download GML file: Allows the user to download the network and its features as a GML file that can be opened in Cytoscape. 
 
 The following image shows you an example of how to interact with the GUI and its functionalities
 
