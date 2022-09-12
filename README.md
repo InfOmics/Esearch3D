@@ -90,10 +90,7 @@ ff_net = wg_data_l$ff_net
 #3) A matrix containing the starting values of the nodes (gene node scores are given by the RNA-seq values while fragments have a starting value of 0)
 input_m = wg_data_l$input_m
 
-#4) A dataframe representing the length of chromosomes
-chr_len = wg_data_l$chr_len
-
-#5) A list of genes to annotate to the chromatin fragments
+#4) A list of genes to annotate to the chromatin fragments
 ann_net_b=wg_data_l$ann_net_b
 
 #Two step propagation -----
