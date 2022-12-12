@@ -1,4 +1,4 @@
-# Esearch3D: predictor of enhancer activity <img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/logo.png" width=250 align="right" style="border:4px solid black;" />
+# Esearch3D: predictor of enhancer activity <img src="https://raw.githubusercontent.com/LucaGiudice/supplementary-files/main/D3SearchE_images/logo.png" width=250 align="right;" />
 
 Signals pertaining to transcriptional activation are transferred from enhancers found in intergenic loci to genes in the form of transcription factors, cofactors, and various transcriptional machinery such as RNA Pol II. How and where this information is transmitted to and from is central for decoding the regulatory landscape of any gene and identifying enhancers. Esearch3D is an unsupervised algorithm designed to predict enhancer regions from 3C data. It works by reverse engineering the flow of regulatory information from enhancers to genes. Using this approach we were able to identify intergenic regulatory enhancers using solely gene expression and 3D genomic data. 
 
