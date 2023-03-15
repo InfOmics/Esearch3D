@@ -5,6 +5,8 @@ Signals pertaining to transcriptional activation are transferred from enhancers 
 Esearch3D models chromosome conformation capture (3C) data as chromatin interaction network (CIN) and then exploits graph-theory algorithms to integrate RNA-seq data to calculate an imputed activity score (IAS) for intergenic regions.  We also provide a visualisation tool to allow an easy interpretation of the results.
 
 [![R-CMD-check](https://github.com/jokergoo/cola/workflows/R-CMD-check/badge.svg)](https://github.com/jokergoo/cola/actions)
+[![DOI](https://zenodo.org/badge/521224276.svg)](https://zenodo.org/badge/latestdoi/521224276)
+
 
 ## Features
 
