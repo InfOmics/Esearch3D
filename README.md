@@ -19,7 +19,7 @@ Esearch3D models chromosome conformation capture (3C) data as chromatin interact
 
 ## Citation
 
-Maninder Heer*, Luca Giudice*, Claudia Mengoni, Rosalba Giugno^, and Daniel Rico^. Esearch3D: Propagating gene expression in chromatin networks to illuminate active enhancers
+Maninder Heer*, Luca Giudice*, Claudia Mengoni, Rosalba Giugno^, Daniel Rico^, Esearch3D: propagating gene expression in chromatin networks to illuminate active enhancers, Nucleic Acids Research, 2023;, gkad229, https://doi.org/10.1093/nar/gkad229
 
 *equal contribution
 ^co-senior authors
